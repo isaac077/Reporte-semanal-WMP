@@ -23,20 +23,21 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
         {/* ENCABEZADO SUPERIOR PDF */}
         <div>
           {/* Línea azul delgada de acento superior */}
-          <div className="w-full h-[2px] bg-[#0F3D64] mb-3 flex justify-between items-center relative">
-            <div className="absolute right-0 top-[-26px] bg-[#FFFFFF] pl-3">
+          <div className="w-full h-[3px] bg-[#0F3D64] mb-4" />
+
+          {/* TITULO Y LOGO OFICIAL */}
+          <div className="flex justify-between items-start mb-6">
+            <div>
+              <h1 className="text-[22px] font-black text-[#0F3D64] tracking-tight uppercase leading-tight mb-0.5">
+                REPORTE SEMANAL DE ESTATUS
+              </h1>
+              <p className="text-[12px] text-[#64748B] font-medium">
+                Seguimiento de proyectos por cuenta
+              </p>
+            </div>
+            <div className="shrink-0 pl-4">
               <WmpLogo size="lg" />
             </div>
-          </div>
-
-          {/* TITULO Y SUBTITULO */}
-          <div className="mt-8 mb-5">
-            <h1 className="text-[23px] font-black text-[#0F3D64] tracking-tight uppercase leading-tight mb-0.5">
-              REPORTE SEMANAL DE ESTATUS
-            </h1>
-            <p className="text-[13px] text-[#64748B] font-medium">
-              Seguimiento de proyectos por cuenta
-            </p>
           </div>
 
           {/* TABLA DE INFORMACION GENERAL */}
@@ -176,16 +177,9 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
             </div>
 
             {/* Columna Centro: Logo Corporativo WMP */}
-            <div className="col-span-3 text-center flex flex-col items-center justify-center border-x border-[#E2E8F0] px-2">
-              <div className="w-9 h-9 rounded-full bg-[#0F3D64] flex items-center justify-center text-white mb-1">
-                <svg className="w-5 h-5 text-sky-200 fill-current" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2-12c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" />
-                </svg>
-              </div>
-              <span className="text-[12px] font-extrabold text-[#0F3D64] uppercase tracking-tight block">
-                WMP Mexico Advisors
-              </span>
-              <span className="text-[7.5px] text-[#64748B] font-semibold uppercase tracking-wider block mt-0.5">
+            <div className="col-span-3 text-center flex flex-col items-center justify-center border-x border-[#E2E8F0] px-2 py-1">
+              <WmpLogo size="lg" />
+              <span className="text-[7px] text-[#64748B] font-bold uppercase tracking-wider block mt-1">
                 Tax | Accounting | Audit | Legal | Digital | Consulting
               </span>
             </div>

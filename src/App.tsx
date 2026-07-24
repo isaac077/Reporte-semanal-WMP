@@ -410,7 +410,7 @@ export default function App() {
       {/* Pie de Página de la Aplicación Web */}
       <footer className="bg-slate-900 text-slate-400 text-xs py-5 border-t border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-          <WmpLogo size="sm" textColor="#F1F5F9" />
+          <WmpLogo size="sm" isDark={true} />
           <span className="text-slate-500 text-[11px]">Reporte Semanal de Estatus</span>
         </div>
       </footer>
