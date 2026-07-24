@@ -1,6 +1,7 @@
 import React from 'react';
 import { FullReportData } from '../types/report';
 import { formatDateDisplay, getStatusBadgeConfig } from '../utils/helpers';
+import { WmpLogo } from './WmpLogo';
 
 interface ReportPreviewProps {
   reportData: FullReportData;
@@ -23,26 +24,8 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
         <div>
           {/* Línea azul delgada de acento superior */}
           <div className="w-full h-[2px] bg-[#0F3D64] mb-3 flex justify-between items-center relative">
-            <div className="absolute right-0 top-[-18px] flex items-center space-x-2 bg-[#FFFFFF] pl-3">
-              {/* Logo WMP Icon o Imagen subida */}
-              <img
-                src="/logo.png"
-                alt="WMP Logo"
-                className="h-8 w-auto max-w-[120px] object-contain hidden"
-                onLoad={(e) => {
-                  (e.target as HTMLElement).classList.remove('hidden');
-                  const fallback = (e.target as HTMLElement).nextElementSibling;
-                  if (fallback) fallback.classList.add('hidden');
-                }}
-              />
-              <div className="w-8 h-8 rounded-full bg-[#0F3D64] flex items-center justify-center text-white shrink-0">
-                <svg className="w-5 h-5 text-[#BAE6FD] fill-current" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2-12c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" />
-                </svg>
-              </div>
-              <span className="text-[17px] font-bold text-[#1E293B] tracking-tight">
-                WMP <span className="font-normal text-[#475569]">Mexico Advisors</span>
-              </span>
+            <div className="absolute right-0 top-[-26px] bg-[#FFFFFF] pl-3">
+              <WmpLogo size="lg" />
             </div>
           </div>
 

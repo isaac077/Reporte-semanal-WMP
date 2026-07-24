@@ -1,5 +1,6 @@
 import React from 'react';
 import { FileText, Sparkles, Download, Eye } from 'lucide-react';
+import { WmpLogo } from './WmpLogo';
 
 interface HeaderProps {
   onLoadSampleData: () => void;
@@ -26,17 +27,10 @@ export const Header: React.FC<HeaderProps> = ({
           
           {/* Logo y Título Principal */}
           <div className="flex items-center space-x-3.5">
-            <div className="w-11 h-11 rounded-xl bg-[#0F3D64] flex items-center justify-center text-white shadow-md shadow-slate-900/10 shrink-0">
-              {/* Logo SVG WMP */}
-              <svg className="w-7 h-7 text-sky-300 fill-current" viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2-12c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" />
-              </svg>
-            </div>
+            <WmpLogo size="lg" />
+            <div className="h-8 w-px bg-slate-200 hidden sm:block" />
             <div>
               <div className="flex items-center space-x-2">
-                <span className="text-xs font-bold tracking-wider text-[#0B4F82] uppercase">
-                  WMP Mexico Advisors
-                </span>
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 text-[#0F3D64] border border-sky-200/80">
                   Sistema de Reportes
                 </span>
