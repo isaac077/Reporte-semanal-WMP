@@ -1,0 +1,6 @@
+{
+  "name": "Reporte Semanal WMP Mexico Advisors",
+  "description": "Generador de reportes semanales de estatus por cuenta con formato corporativo PDF e integración con OneDrive.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
