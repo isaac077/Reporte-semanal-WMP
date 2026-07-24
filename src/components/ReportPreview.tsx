@@ -169,9 +169,8 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
                 WM+P Management Services S. de R.L. de C.V.
               </strong>
               <p className="text-[#475569]">
-                Av. Anillo Vial II Fray Junipero Serra #2601 Oficina 201<br />
-                Colonia Juriquilla Santa Fe<br />
-                76230 Querétaro, Querétaro, México<br />
+                Level Tower B - 2. Floor Avenida Antea 1130<br />
+                76127 Jurica, Querétaro, México<br />
                 <span className="font-semibold text-[#0F3D64]">T: + 52 442 209 6850</span>
               </p>
             </div>

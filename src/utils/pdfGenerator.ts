@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import html2canvas from 'html2canvas-pro';
 import { generateReportFilename } from './helpers';
 
 export interface GeneratedPdfResult {
@@ -21,23 +21,26 @@ export async function generatePdfFromElement(
   // Nombre automático del archivo
   const filename = generateReportFilename(cutoffDate, responsible);
 
-  // Capturar con html2canvas en alta definición (scale: 2)
+  // Capturar con html2canvas-pro en alta definición (scale: 2)
   const canvas = await html2canvas(element, {
     scale: 2,
     useCORS: true,
+    allowTaint: true,
     logging: false,
     backgroundColor: '#ffffff',
     windowWidth: 800,
     onclone: (clonedDoc) => {
       // Helper para convertir oklch(...) a rgb(...) usando el parser nativo del navegador
-      const convertOklchToRgb = (str: string): string => {
+      const tempDiv = clonedDoc.createElement('div');
+      clonedDoc.body.appendChild(tempDiv);
+
+      const resolveOklch = (str: string): string => {
         return str.replace(/oklch\([^)]+\)/gi, (match) => {
           try {
-            const tempDiv = document.createElement('div');
             tempDiv.style.color = match;
-            document.body.appendChild(tempDiv);
-            const computedColor = window.getComputedStyle(tempDiv).color;
-            document.body.removeChild(tempDiv);
+            const computedColor =
+              clonedDoc.defaultView?.getComputedStyle(tempDiv).color ||
+              window.getComputedStyle(tempDiv).color;
             if (computedColor && !computedColor.includes('oklch')) {
               return computedColor;
             }
@@ -52,20 +55,41 @@ export async function generatePdfFromElement(
       const styleElements = Array.from(clonedDoc.querySelectorAll('style'));
       styleElements.forEach((style) => {
         if (style.textContent && style.textContent.includes('oklch')) {
-          style.textContent = convertOklchToRgb(style.textContent);
+          style.textContent = resolveOklch(style.textContent);
         }
       });
 
-      // 2. Limpiar estilos inline en los elementos dentro del contenedor del reporte
+      // 2. Limpiar estilos inline y computed colors en todos los elementos del reporte
       const pdfContainer = clonedDoc.getElementById(elementId);
       if (pdfContainer) {
-        const allNodes = [pdfContainer, ...Array.from(pdfContainer.querySelectorAll('*'))];
+        const allNodes = [pdfContainer, ...Array.from(pdfContainer.querySelectorAll('*'))] as HTMLElement[];
         allNodes.forEach((node) => {
-          const htmlEl = node as HTMLElement;
-          if (htmlEl.style && htmlEl.style.cssText && htmlEl.style.cssText.includes('oklch')) {
-            htmlEl.style.cssText = convertOklchToRgb(htmlEl.style.cssText);
+          if (node.style) {
+            if (node.style.cssText && node.style.cssText.includes('oklch')) {
+              node.style.cssText = resolveOklch(node.style.cssText);
+            }
+            try {
+              const computed =
+                clonedDoc.defaultView?.getComputedStyle(node) ||
+                window.getComputedStyle(node);
+              if (computed) {
+                const colorProps = ['color', 'backgroundColor', 'borderColor', 'borderTopColor', 'borderBottomColor', 'borderLeftColor', 'borderRightColor', 'fill', 'stroke'];
+                colorProps.forEach((prop) => {
+                  const val = computed.getPropertyValue(prop);
+                  if (val && val.includes('oklch')) {
+                    node.style.setProperty(prop, resolveOklch(val));
+                  }
+                });
+              }
+            } catch (e) {
+              // ignore
+            }
           }
         });
+      }
+
+      if (clonedDoc.body.contains(tempDiv)) {
+        clonedDoc.body.removeChild(tempDiv);
       }
     },
   });
