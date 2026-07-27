@@ -9,7 +9,6 @@ import {
   GetPromptRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { reportStore } from './reportState.js';
-import { generateServerPdf } from './pdfServerGenerator.js';
 import { ActivityStatus } from '../types/report.js';
 
 export function createMcpServer() {
@@ -388,6 +387,7 @@ export function createMcpServer() {
         }
 
         case 'download_pdf_report': {
+          const { generateServerPdf } = await import('./pdfServerGenerator.js');
           const report = reportStore.getReport();
           const pdfBuffer = generateServerPdf();
           const base64Pdf = pdfBuffer.toString('base64');
