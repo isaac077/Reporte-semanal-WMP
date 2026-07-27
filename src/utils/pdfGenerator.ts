@@ -143,10 +143,10 @@ export async function generatePdfFromElement(
           img.style.maxHeight = '48px';
         });
 
-        // 4. Control inteligente de saltos de página para no cortar tarjetas, filas, imágenes ni textos
+        // 4. Control inteligente de saltos de página y pie de página dinámico
         const containerWidth = pdfContainer.offsetWidth || 794;
         const PAGE_HEIGHT_PX = containerWidth * (279.4 / 215.9); // ~1027.53px (Relación Carta)
-        const MARGIN_BOTTOM_PX = 24; // 24px de margen de seguridad para no pegar elementos al borde inferior
+        const BOTTOM_MARGIN_PX = 36; // Margen de seguridad inferior para no cortar contenido
 
         const getContainerTop = (el: HTMLElement) => {
           const elRect = el.getBoundingClientRect();
@@ -154,7 +154,10 @@ export async function generatePdfFromElement(
           return elRect.top - containerRect.top;
         };
 
-        const pushToNextPageIfNeeded = (el: HTMLElement, isTableTr = false) => {
+        const accountCards = Array.from(pdfContainer.querySelectorAll('.pdf-account-card')) as HTMLElement[];
+
+        // Función para mover elementos a la siguiente hoja si cruzan el límite de página
+        const pushElementToNextPage = (el: HTMLElement, isTableTr = false) => {
           const top = getContainerTop(el);
           const height = el.offsetHeight;
           if (height === 0) return;
@@ -162,12 +165,11 @@ export async function generatePdfFromElement(
           const bottom = top + height;
           const pageIndex = Math.floor(top / PAGE_HEIGHT_PX);
           const nextPageStart = (pageIndex + 1) * PAGE_HEIGHT_PX;
-          const pageBoundary = nextPageStart - MARGIN_BOTTOM_PX;
+          const pageBoundary = nextPageStart - BOTTOM_MARGIN_PX;
 
-          // Si el elemento comienza en esta página pero su parte inferior se extiende más allá del límite de seguridad
+          // Si el elemento empieza en esta página pero se extiende más allá del límite seguro
           if (top < nextPageStart && bottom > pageBoundary) {
             const spacerHeight = Math.ceil(nextPageStart - top);
-
             if (spacerHeight > 0 && spacerHeight < PAGE_HEIGHT_PX) {
               if (isTableTr) {
                 const spacerTr = clonedDoc.createElement('tr');
@@ -192,24 +194,71 @@ export async function generatePdfFromElement(
           }
         };
 
-        // a) Procesar cada tarjeta de cuenta/proyecto y sus filas
-        const accountCards = Array.from(pdfContainer.querySelectorAll('.pdf-account-card')) as HTMLElement[];
+        // a) Evaluar cada tarjeta de cuenta/proyecto y sus filas de tareas
         accountCards.forEach((card) => {
           const cardHeight = card.offsetHeight;
-          if (cardHeight <= PAGE_HEIGHT_PX - 60) {
-            // Si la tarjeta completa cabe en una hoja sola, moverla completa si se corta
-            pushToNextPageIfNeeded(card, false);
+          if (cardHeight <= PAGE_HEIGHT_PX - 80) {
+            // Si la tarjeta completa cabe en una hoja sola, la empujamos completa si se corta
+            pushElementToNextPage(card, false);
           } else {
-            // Si la tarjeta es más alta que 1 hoja, evaluar fila por fila (tr)
+            // Si la tarjeta es más alta que una página completa, evaluamos sus filas (tr)
             const rows = Array.from(card.querySelectorAll('tbody tr')) as HTMLElement[];
-            rows.forEach((row) => pushToNextPageIfNeeded(row, true));
+            rows.forEach((row) => pushElementToNextPage(row, true));
           }
         });
 
-        // b) Procesar el pie de página corporativo
+        // b) Posicionar el pie de página corporativo (Footer) y evitar que quede solo en una hoja
         const footer = pdfContainer.querySelector('#pdf-corporate-footer') as HTMLElement | null;
         if (footer) {
-          pushToNextPageIfNeeded(footer, false);
+          const footerHeight = footer.offsetHeight || 120;
+          let footerTop = getContainerTop(footer);
+          let footerPage = Math.floor(footerTop / PAGE_HEIGHT_PX);
+          const maxFooterTopOnPage = (footerPage + 1) * PAGE_HEIGHT_PX - BOTTOM_MARGIN_PX - footerHeight;
+
+          // Si el pie de página no cabe en la hoja actual y tendría que saltar a la siguiente
+          if (footerTop > maxFooterTopOnPage) {
+            // Para evitar que el footer quede "SOLO" en la última página:
+            // Mover la última tarjeta de cuenta (o últimas filas) a la siguiente página también
+            if (accountCards.length > 1) {
+              const lastCard = accountCards[accountCards.length - 1];
+              const lastCardTop = getContainerTop(lastCard);
+              const lastCardPage = Math.floor(lastCardTop / PAGE_HEIGHT_PX);
+
+              if (lastCardPage === footerPage) {
+                const nextPageStart = (footerPage + 1) * PAGE_HEIGHT_PX;
+                const pushSpacerHeight = Math.ceil(nextPageStart - lastCardTop);
+                if (pushSpacerHeight > 0) {
+                  const cardSpacer = clonedDoc.createElement('div');
+                  cardSpacer.style.height = `${pushSpacerHeight}px`;
+                  cardSpacer.style.width = '100%';
+                  cardSpacer.style.clear = 'both';
+                  lastCard.parentNode?.insertBefore(cardSpacer, lastCard);
+                }
+              }
+            }
+            footerTop = getContainerTop(footer);
+            footerPage = Math.floor(footerTop / PAGE_HEIGHT_PX);
+          }
+
+          // Alinear el pie de página exactamente en la parte inferior de la última hoja
+          const targetFooterTop = (footerPage + 1) * PAGE_HEIGHT_PX - BOTTOM_MARGIN_PX - footerHeight;
+          const currentFooterTop = getContainerTop(footer);
+          const spacerHeight = Math.max(0, Math.ceil(targetFooterTop - currentFooterTop));
+
+          if (spacerHeight > 0) {
+            const spacer = clonedDoc.createElement('div');
+            spacer.style.height = `${spacerHeight}px`;
+            spacer.style.width = '100%';
+            spacer.style.clear = 'both';
+            footer.parentNode?.insertBefore(spacer, footer);
+          }
+
+          const finalTotalPages = footerPage + 1;
+          pdfContainer.style.minHeight = `${finalTotalPages * PAGE_HEIGHT_PX}px`;
+          pdfContainer.style.height = `${finalTotalPages * PAGE_HEIGHT_PX}px`;
+          pdfContainer.style.maxHeight = `${finalTotalPages * PAGE_HEIGHT_PX}px`;
+          pdfContainer.style.overflow = 'hidden';
+          pdfContainer.style.boxSizing = 'border-box';
         }
       }
 

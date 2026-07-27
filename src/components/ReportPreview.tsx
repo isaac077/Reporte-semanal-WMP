@@ -141,11 +141,13 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
                             <td className="py-2.5 px-3 break-words" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                               <div>
                                 {/* Badge de Estatus */}
-                                <div style={{ display: 'block', marginBottom: '4px' }}>
+                                <div style={{ display: 'block', marginBottom: '2px' }}>
                                   <span
                                     className="pdf-status-badge"
                                     style={{
                                       display: 'inline-block',
+                                      position: 'relative',
+                                      top: '-10px',
                                       backgroundColor: badge.badgeBgPdf,
                                       color: badge.pdfColor,
                                       border: `1px solid ${badge.pdfColor}`,
