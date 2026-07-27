@@ -180,8 +180,8 @@ export function setupApiRoutes(app: Express) {
     });
   });
 
-  // MCP SSE Connection Endpoint
-  app.get('/api/mcp/sse', async (req: Request, res: Response) => {
+  // MCP SSE Connection Handler
+  const handleMcpSse = async (req: Request, res: Response) => {
     console.log('[MCP] SSE connection client connected');
 
     res.setHeader('Content-Type', 'text/event-stream');
@@ -201,7 +201,12 @@ export function setupApiRoutes(app: Express) {
     });
 
     await mcpServer.connect(transport);
-  });
+  };
+
+  // Register SSE aliases
+  app.get('/api/mcp/sse', handleMcpSse);
+  app.get('/mcp/sse', handleMcpSse);
+  app.get('/sse', handleMcpSse);
 
   // Handle stateless RPC request (Shared engine for Vercel Serverless & Direct HTTP POST)
   const handleRpcRequest = async (jsonRpcReq: any) => {
@@ -572,14 +577,14 @@ export function setupApiRoutes(app: Express) {
     };
   };
 
-  // MCP SSE Message POST Endpoint
-  app.post('/api/mcp/message', async (req: Request, res: Response) => {
-    const sessionId = req.query.sessionId as string;
+  // MCP SSE Message POST Handler
+  const handleMcpMessage = async (req: Request, res: Response) => {
+    const sessionId = (req.query.sessionId as string) || (req.headers['mcp-session-id'] as string);
     const transport = sessionId ? sseTransports.get(sessionId) : undefined;
 
     if (transport) {
       try {
-        await transport.handlePostMessage(req, res);
+        await transport.handlePostMessage(req, res, req.body);
         return;
       } catch (err) {
         console.warn('[MCP] Transport handlePostMessage failed, falling back to stateless handler:', err);
@@ -597,10 +602,15 @@ export function setupApiRoutes(app: Express) {
     } else {
       return res.status(202).end();
     }
-  });
+  };
+
+  app.post('/api/mcp/message', handleMcpMessage);
+  app.post('/mcp/message', handleMcpMessage);
+  app.post('/message', handleMcpMessage);
+  app.post('/messages', handleMcpMessage);
 
   // Direct Streamable MCP JSON-RPC 2.0 Endpoint (for HTTP clients)
-  app.post('/api/mcp', async (req: Request, res: Response) => {
+  const handleDirectRpc = async (req: Request, res: Response) => {
     const body = req.body;
     const response = Array.isArray(body)
       ? await Promise.all(body.map((b) => handleRpcRequest(b)))
@@ -611,13 +621,16 @@ export function setupApiRoutes(app: Express) {
     } else {
       return res.status(202).end();
     }
-  });
+  };
+
+  app.post('/api/mcp', handleDirectRpc);
+  app.post('/mcp', handleDirectRpc);
 
   // ==========================================
   // 3. OPENAPI 3.0 SPECIFICATION FOR CHATGPT
   // ==========================================
 
-  app.get('/api/openapi.json', (req: Request, res: Response) => {
+  const handleOpenApiSpec = (req: Request, res: Response) => {
     const host = (req.headers['x-forwarded-host'] as string) || req.get('host') || 'localhost:3000';
     const protocol = (req.headers['x-forwarded-proto'] as string) || req.protocol || 'https';
     const baseUrl = `${protocol}://${host}`;
@@ -850,5 +863,8 @@ export function setupApiRoutes(app: Express) {
     };
 
     res.json(openApiSpec);
-  });
+  };
+
+  app.get('/api/openapi.json', handleOpenApiSpec);
+  app.get('/openapi.json', handleOpenApiSpec);
 }
