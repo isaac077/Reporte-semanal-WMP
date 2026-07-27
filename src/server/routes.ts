@@ -1,9 +1,9 @@
 import { Express, Request, Response } from 'express';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
-import { reportStore } from './reportState';
-import { createMcpServer, sseTransports } from './mcpServer';
-import { generateServerPdf } from './pdfServerGenerator';
-import { ActivityStatus } from '../types/report';
+import { reportStore } from './reportState.js';
+import { createMcpServer, sseTransports } from './mcpServer.js';
+import { generateServerPdf } from './pdfServerGenerator.js';
+import { ActivityStatus } from '../types/report.js';
 
 export function setupApiRoutes(app: Express) {
   // CORS Middleware for Vercel & Remote Clients

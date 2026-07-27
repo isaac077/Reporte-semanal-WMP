@@ -8,9 +8,9 @@ import {
   ListPromptsRequestSchema,
   GetPromptRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
-import { reportStore } from './reportState';
-import { generateServerPdf } from './pdfServerGenerator';
-import { ActivityStatus } from '../types/report';
+import { reportStore } from './reportState.js';
+import { generateServerPdf } from './pdfServerGenerator.js';
+import { ActivityStatus } from '../types/report.js';
 
 export function createMcpServer() {
   const server = new Server(

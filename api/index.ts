@@ -1,21 +1,26 @@
 import express from 'express';
-import { setupApiRoutes } from '../src/server/routes';
+import { setupApiRoutes } from '../src/server/routes.js';
 
 const app = express();
 
-app.use(express.json());
+app.use(express.json({ limit: '25mb' }));
+app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     service: 'WMP Reportes Semanales',
-    platform: 'Vercel Serverless & Cloud Run',
+    platform: 'Vercel Serverless',
     mcp: 'enabled',
   });
 });
 
 // Setup API routes and MCP endpoints
-setupApiRoutes(app);
+try {
+  setupApiRoutes(app);
+} catch (err: any) {
+  console.error('[SERVER SETUP ERROR]:', err);
+}
 
 export default app;

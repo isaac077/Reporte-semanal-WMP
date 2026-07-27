@@ -1,4 +1,4 @@
-import { FullReportData } from '../types/report';
+import { FullReportData } from '../types/report.js';
 
 export const SAMPLE_REPORT_DATA: FullReportData = {
   metadata: {

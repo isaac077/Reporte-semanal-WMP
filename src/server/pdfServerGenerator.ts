@@ -1,6 +1,6 @@
 import { jsPDF } from 'jspdf';
-import { reportStore } from './reportState';
-import { FullReportData, ActivityStatus } from '../types/report';
+import { reportStore } from './reportState.js';
+import { FullReportData, ActivityStatus } from '../types/report.js';
 
 export function generateServerPdf(): Buffer {
   const data: FullReportData = reportStore.getReport();
