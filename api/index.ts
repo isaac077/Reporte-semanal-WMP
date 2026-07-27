@@ -19,6 +19,4 @@ app.get('/api/health', (req, res) => {
 // Setup API routes and MCP endpoints
 setupApiRoutes(app);
 
-export default function handler(req: any, res: any) {
-  return app(req, res);
-}
+export default app;

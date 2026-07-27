@@ -1,6 +1,4 @@
 {
-  "version": 2,
-  "framework": "vite",
   "rewrites": [
     {
       "source": "/api/test",
@@ -25,6 +23,10 @@
     {
       "source": "/sse",
       "destination": "/api/index.ts"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
