@@ -48,9 +48,9 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
             <table className="w-full border-collapse text-left" style={{ borderCollapse: 'collapse', width: '100%' }}>
               <thead>
                 <tr className="bg-[#F8FAFC] text-[#B91C1C] text-[10px] font-bold uppercase tracking-wider border-b border-[#CBD5E1]" style={{ backgroundColor: '#F8FAFC', color: '#B91C1C', borderBottom: '1px solid #CBD5E1' }}>
-                  <th className="py-2 px-3 border-r border-[#CBD5E1] w-[20%]" style={{ borderRight: '1px solid #CBD5E1' }}>SEMANA</th>
-                  <th className="py-2 px-3 border-r border-[#CBD5E1] w-[30%]" style={{ borderRight: '1px solid #CBD5E1' }}>FECHA DE CORTE</th>
-                  <th className="py-2 px-3 w-[50%]">RESPONSABLE</th>
+                  <th className="py-2.5 px-3 border-r border-[#CBD5E1] w-[20%]" style={{ borderRight: '1px solid #CBD5E1', verticalAlign: 'middle', lineHeight: '1.2' }}>SEMANA</th>
+                  <th className="py-2.5 px-3 border-r border-[#CBD5E1] w-[30%]" style={{ borderRight: '1px solid #CBD5E1', verticalAlign: 'middle', lineHeight: '1.2' }}>FECHA DE CORTE</th>
+                  <th className="py-2.5 px-3 w-[50%]" style={{ verticalAlign: 'middle', lineHeight: '1.2' }}>RESPONSABLE</th>
                 </tr>
               </thead>
               <tbody>
@@ -68,9 +68,9 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
               </tbody>
               <thead>
                 <tr className="bg-[#F8FAFC] text-[#B91C1C] text-[10px] font-bold uppercase tracking-wider border-b border-[#CBD5E1]" style={{ backgroundColor: '#F8FAFC', color: '#B91C1C', borderBottom: '1px solid #CBD5E1' }}>
-                  <th className="py-2 px-3 border-r border-[#CBD5E1] w-[35%]" style={{ borderRight: '1px solid #CBD5E1' }}>ÁREA / PUESTO</th>
-                  <th className="py-2 px-3 border-r border-[#CBD5E1] w-[30%]" style={{ borderRight: '1px solid #CBD5E1' }}>TELÉFONO</th>
-                  <th className="py-2 px-3 w-[35%]">CORREO ELECTRÓNICO</th>
+                  <th className="py-2.5 px-3 border-r border-[#CBD5E1] w-[35%]" style={{ borderRight: '1px solid #CBD5E1', verticalAlign: 'middle', lineHeight: '1.2' }}>ÁREA / PUESTO</th>
+                  <th className="py-2.5 px-3 border-r border-[#CBD5E1] w-[30%]" style={{ borderRight: '1px solid #CBD5E1', verticalAlign: 'middle', lineHeight: '1.2' }}>TELÉFONO</th>
+                  <th className="py-2.5 px-3 w-[35%]" style={{ verticalAlign: 'middle', lineHeight: '1.2' }}>CORREO ELECTRÓNICO</th>
                 </tr>
               </thead>
               <tbody>
@@ -105,13 +105,13 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
                 </div>
 
                 {/* Tabla de Actividades */}
-                <table className="w-full border-collapse text-left" style={{ borderCollapse: 'collapse', width: '100%' }}>
+                <table className="w-full border-collapse text-left" style={{ borderCollapse: 'collapse', width: '100%', tableLayout: 'fixed' }}>
                   <thead>
                     <tr className="bg-[#B91C1C] text-white text-[10px] font-bold uppercase tracking-wider" style={{ backgroundColor: '#B91C1C', color: '#FFFFFF' }}>
-                      <th className="py-1.5 px-3 border-r border-[#991B1B] w-[38%]" style={{ borderRight: '1px solid #991B1B' }}>
+                      <th className="py-2 px-3 border-r border-[#991B1B] w-[38%]" style={{ borderRight: '1px solid #991B1B', verticalAlign: 'middle', lineHeight: '1.2', width: '38%' }}>
                         TEMA / PROYECTO
                       </th>
-                      <th className="py-1.5 px-3 w-[62%]">
+                      <th className="py-2 px-3 w-[62%]" style={{ verticalAlign: 'middle', lineHeight: '1.2', width: '62%' }}>
                         ESTATUS / ACTUALIZACIÓN
                       </th>
                     </tr>
@@ -133,38 +133,31 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
                         return (
                           <tr key={act.id} className="text-[11px] text-[#1E293B] bg-[#FFFFFF] align-top" style={{ backgroundColor: '#FFFFFF', color: '#1E293B', borderBottom: '1px solid #CBD5E1' }}>
                             {/* TEMA */}
-                            <td className="py-2.5 px-3 border-r border-[#CBD5E1] font-semibold text-[#1E293B]" style={{ borderRight: '1px solid #CBD5E1', color: '#1E293B' }}>
+                            <td className="py-2.5 px-3 border-r border-[#CBD5E1] font-semibold text-[#1E293B] break-words" style={{ borderRight: '1px solid #CBD5E1', color: '#1E293B', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                               {act.topic || <span className="text-[#94A3B8] font-normal italic" style={{ color: '#94A3B8' }}>Escribe el tema o proyecto</span>}
                             </td>
 
                             {/* ESTATUS Y ACTUALIZACION */}
-                            <td className="py-2.5 px-3">
+                            <td className="py-2.5 px-3 break-words" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                               <div>
                                 {/* Badge de Estatus */}
-                                <div style={{ display: 'block', marginBottom: '1px', lineHeight: '1' }}>
+                                <div style={{ display: 'block', marginBottom: '4px' }}>
                                   <span
                                     className="pdf-status-badge"
                                     style={{
-                                      display: 'inline-flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
+                                      display: 'inline-block',
                                       backgroundColor: badge.badgeBgPdf,
                                       color: badge.pdfColor,
                                       border: `1px solid ${badge.pdfColor}`,
-                                      borderRadius: '2px',
+                                      borderRadius: '3px',
                                       fontSize: '9px',
                                       fontWeight: 700,
                                       textTransform: 'uppercase',
                                       letterSpacing: '0.025em',
-                                      paddingTop: '0px',
-                                      paddingBottom: '8px',
-                                      paddingLeft: '7px',
-                                      paddingRight: '7px',
-                                      lineHeight: '1',
+                                      padding: '2px 8px',
+                                      lineHeight: '1.2',
                                       textAlign: 'center',
-                                      verticalAlign: 'top',
-                                      position: 'relative',
-                                      top: '-5px',
+                                      verticalAlign: 'middle',
                                       boxSizing: 'border-box',
                                     }}
                                   >
@@ -173,7 +166,7 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
                                 </div>
 
                                 {/* Texto de Actualización */}
-                                <p className="text-[11px] text-[#334155] leading-relaxed whitespace-pre-wrap" style={{ color: '#334155' }}>
+                                <p className="text-[11px] text-[#334155] leading-relaxed whitespace-pre-wrap break-words" style={{ color: '#334155', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                                   {act.update || <span className="text-[#94A3B8] italic" style={{ color: '#94A3B8' }}>Avance, pendiente, bloqueo o siguiente paso</span>}
                                 </p>
                               </div>

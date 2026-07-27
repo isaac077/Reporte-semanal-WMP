@@ -33,6 +33,7 @@ export const WmpLogo: React.FC<WmpLogoProps> = ({
             height: '48px',
             maxHeight: '48px',
             width: 'auto',
+            maxWidth: '180px',
             objectFit: 'contain',
             display: 'block',
           }}
@@ -57,6 +58,7 @@ export const WmpLogo: React.FC<WmpLogoProps> = ({
           height: `${currentHeight}px`,
           maxHeight: `${currentHeight}px`,
           width: 'auto',
+          maxWidth: '220px',
           objectFit: 'contain',
           display: 'block',
         }}

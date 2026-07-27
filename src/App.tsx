@@ -267,6 +267,12 @@ export default function App() {
     setIsGeneratingPdf(true);
 
     try {
+      // Si estamos en la pestaña de captura, cambiar a la vista previa para garantizar que el DOM esté 100% renderizado y visible
+      if (activeView !== 'preview') {
+        setActiveView('preview');
+        await new Promise((resolve) => setTimeout(resolve, 250));
+      }
+
       if (document.fonts) {
         await document.fonts.ready;
       }
@@ -426,21 +432,6 @@ export default function App() {
                   Confirmar y Generar PDF
                 </button>
               </div>
-            </div>
-
-            {/* Contenedor offscreen para que el canvas de PDF siempre esté montado y listo */}
-            <div
-              aria-hidden="true"
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: '-9999px',
-                width: '794px',
-                pointerEvents: 'none',
-                opacity: 0,
-              }}
-            >
-              <ReportPreview reportData={reportData} />
             </div>
           </div>
         ) : (
