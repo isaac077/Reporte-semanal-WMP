@@ -1,32 +1,28 @@
 {
   "rewrites": [
     {
-      "source": "/api/testjs",
-      "destination": "/api/testjs.js"
-    },
-    {
       "source": "/api/test",
-      "destination": "/api/test.ts"
+      "destination": "/api/test.mts"
     },
     {
       "source": "/api/debug",
-      "destination": "/api/debug.ts"
+      "destination": "/api/debug.mts"
     },
     {
       "source": "/api/(.*)",
-      "destination": "/api/index.ts"
+      "destination": "/api/index.mts"
     },
     {
       "source": "/mcp",
-      "destination": "/api/index.ts"
+      "destination": "/api/index.mts"
     },
     {
       "source": "/mcp/(.*)",
-      "destination": "/api/index.ts"
+      "destination": "/api/index.mts"
     },
     {
       "source": "/sse",
-      "destination": "/api/index.ts"
+      "destination": "/api/index.mts"
     },
     {
       "source": "/(.*)",
