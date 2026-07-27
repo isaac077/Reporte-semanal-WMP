@@ -8,9 +8,15 @@ import { ActivityStatus } from '../types/report';
 export function setupApiRoutes(app: Express) {
   // CORS Middleware for Vercel & Remote Clients
   app.use((req: Request, res: Response, next) => {
+    if (typeof (res as any).flushHeaders !== 'function') {
+      (res as any).flushHeaders = () => {};
+    }
+    if (typeof (res as any).flush !== 'function') {
+      (res as any).flush = () => {};
+    }
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, mcp-session-id, mcp-version');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, mcp-session-id, mcp-version, Accept, Origin');
     if (req.method === 'OPTIONS') {
       return res.status(200).end();
     }
@@ -184,23 +190,34 @@ export function setupApiRoutes(app: Express) {
   const handleMcpSse = async (req: Request, res: Response) => {
     console.log('[MCP] SSE connection client connected');
 
+    if (typeof (res as any).flushHeaders !== 'function') {
+      (res as any).flushHeaders = () => {};
+    }
+
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache, no-transform');
     res.setHeader('Connection', 'keep-alive');
     res.setHeader('X-Accel-Buffering', 'no');
     res.setHeader('Access-Control-Allow-Origin', '*');
 
-    const transport = new SSEServerTransport('/api/mcp/message', res);
-    const mcpServer = createMcpServer();
+    try {
+      const transport = new SSEServerTransport('/api/mcp/message', res);
+      const mcpServer = createMcpServer();
 
-    sseTransports.set(transport.sessionId, transport);
+      sseTransports.set(transport.sessionId, transport);
 
-    req.on('close', () => {
-      console.log(`[MCP] SSE connection closed for session ${transport.sessionId}`);
-      sseTransports.delete(transport.sessionId);
-    });
+      req.on('close', () => {
+        console.log(`[MCP] SSE connection closed for session ${transport.sessionId}`);
+        sseTransports.delete(transport.sessionId);
+      });
 
-    await mcpServer.connect(transport);
+      await mcpServer.connect(transport);
+    } catch (err: any) {
+      console.error('[MCP] SSE connection error:', err);
+      if (!res.headersSent) {
+        res.status(500).json({ error: 'SSE Transport Error', message: err?.message });
+      }
+    }
   };
 
   // Register SSE aliases
@@ -584,7 +601,7 @@ export function setupApiRoutes(app: Express) {
 
     if (transport) {
       try {
-        await transport.handlePostMessage(req, res, req.body);
+        await transport.handlePostMessage(req, res);
         return;
       } catch (err) {
         console.warn('[MCP] Transport handlePostMessage failed, falling back to stateless handler:', err);
@@ -609,22 +626,60 @@ export function setupApiRoutes(app: Express) {
   app.post('/message', handleMcpMessage);
   app.post('/messages', handleMcpMessage);
 
-  // Direct Streamable MCP JSON-RPC 2.0 Endpoint (for HTTP clients)
+  // Direct Streamable MCP JSON-RPC 2.0 Endpoint (for HTTP clients like ChatGPT)
   const handleDirectRpc = async (req: Request, res: Response) => {
     const body = req.body;
-    const response = Array.isArray(body)
-      ? await Promise.all(body.map((b) => handleRpcRequest(b)))
-      : await handleRpcRequest(body);
+    
+    // If request body has JSON-RPC or is array
+    if (body && (body.jsonrpc || Array.isArray(body))) {
+      const response = Array.isArray(body)
+        ? await Promise.all(body.map((b) => handleRpcRequest(b)))
+        : await handleRpcRequest(body);
 
-    if (response) {
-      return res.json(response);
-    } else {
-      return res.status(202).end();
+      if (response) {
+        return res.json(response);
+      } else {
+        return res.status(202).end();
+      }
     }
+
+    // Default response for GET/POST without jsonrpc body
+    return res.json({
+      mcpServer: 'Thomas Wagner Weekly Report MCP Server',
+      version: '1.0.0',
+      status: 'active',
+      endpoints: {
+        sse: '/api/mcp/sse',
+        message: '/api/mcp/message',
+        post: '/api/mcp',
+      },
+      availableTools: [
+        'get_full_report',
+        'get_accounts_list',
+        'get_account_activities',
+        'get_report_summary',
+        'add_activity',
+        'batch_add_activities',
+        'update_activity',
+        'delete_activity',
+        'update_metadata',
+        'load_sample_data',
+        'clear_report',
+        'download_pdf_report',
+      ],
+    });
   };
 
+  app.get('/api/mcp', handleDirectRpc);
   app.post('/api/mcp', handleDirectRpc);
+  app.delete('/api/mcp', (req: Request, res: Response) => {
+    res.status(200).json({ status: 'ok', message: 'Session closed' });
+  });
+  app.get('/mcp', handleDirectRpc);
   app.post('/mcp', handleDirectRpc);
+  app.delete('/mcp', (req: Request, res: Response) => {
+    res.status(200).json({ status: 'ok', message: 'Session closed' });
+  });
 
   // ==========================================
   // 3. OPENAPI 3.0 SPECIFICATION FOR CHATGPT
