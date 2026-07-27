@@ -47,7 +47,7 @@ export async function generatePdfFromElement(
           } catch (e) {
             // ignore
           }
-          return 'rgb(15, 61, 100)';
+          return 'rgb(185, 28, 28)';
         });
       };
 
@@ -178,26 +178,32 @@ export async function generatePdfFromElement(
           }
         });
 
-        // b) Ajustar pie de página corporativo si se corta
+        // b) Asegurar que el pie de página corporativo SIEMPRE quede en la parte inferior de la última hoja
         const footer = pdfContainer.querySelector('#pdf-corporate-footer') as HTMLElement | null;
         if (footer) {
           const footerTop = getContainerTop(footer);
-          const footerHeight = footer.offsetHeight;
+          const footerHeight = footer.offsetHeight || 120;
           const footerBottom = footerTop + footerHeight;
           const p = Math.floor(footerTop / PAGE_HEIGHT_PX) + 1;
-          const usableBottom = p * PAGE_HEIGHT_PX - BOTTOM_MARGIN_PX;
+          const maxUsablePageBottom = p * PAGE_HEIGHT_PX - BOTTOM_MARGIN_PX;
 
-          if (footerBottom > usableBottom) {
-            const targetTop = p * PAGE_HEIGHT_PX + TOP_MARGIN_PX;
-            const spacerHeight = Math.max(0, targetTop - footerTop);
-            if (spacerHeight > 0) {
-              const spacer = clonedDoc.createElement('div');
-              spacer.style.height = `${spacerHeight}px`;
-              spacer.style.width = '100%';
-              spacer.style.clear = 'both';
-              footer.parentNode?.insertBefore(spacer, footer);
-            }
+          const targetPage = footerBottom <= maxUsablePageBottom ? p : p + 1;
+          const desiredFooterTop = targetPage * PAGE_HEIGHT_PX - BOTTOM_MARGIN_PX - footerHeight;
+          const spacerHeight = Math.max(0, desiredFooterTop - footerTop);
+
+          if (spacerHeight > 0) {
+            const spacer = clonedDoc.createElement('div');
+            spacer.style.height = `${spacerHeight}px`;
+            spacer.style.width = '100%';
+            spacer.style.clear = 'both';
+            footer.parentNode?.insertBefore(spacer, footer);
           }
+
+          pdfContainer.style.minHeight = `${targetPage * PAGE_HEIGHT_PX}px`;
+          pdfContainer.style.height = `${targetPage * PAGE_HEIGHT_PX}px`;
+          pdfContainer.style.maxHeight = `${targetPage * PAGE_HEIGHT_PX}px`;
+          pdfContainer.style.overflow = 'hidden';
+          pdfContainer.style.boxSizing = 'border-box';
         }
       }
 
@@ -226,7 +232,10 @@ export async function generatePdfFromElement(
   const ratio = pdfWidth / imgWidth;
   const calculatedHeight = imgHeight * ratio;
 
-  if (calculatedHeight <= pdfHeight) {
+  // Tolerancia de 3mm (~11px) para evitar generar hojas en blanco extra por redondeos de subpíxeles
+  const TOLERANCE_MM = 3.0;
+
+  if (calculatedHeight <= pdfHeight + TOLERANCE_MM) {
     // Cabe perfectamente en 1 página
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, calculatedHeight);
   } else {
@@ -237,7 +246,7 @@ export async function generatePdfFromElement(
     pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, calculatedHeight);
     heightLeft -= pdfHeight;
 
-    while (heightLeft > 0) {
+    while (heightLeft > TOLERANCE_MM) {
       position -= pdfHeight;
       pdf.addPage();
       pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, calculatedHeight);

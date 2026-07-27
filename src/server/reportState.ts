@@ -8,10 +8,10 @@ function createDefaultReportData(): FullReportData {
     metadata: {
       week: 'Semana 30',
       cutoffDate: todayStr,
-      responsible: 'Norma Castañeda',
-      department: 'Gerencia de Consultoría & Proyectos',
-      phone: '+52 442 209 6850',
-      email: 'norma.castaneda@wmp-mexico.com',
+      responsible: 'Thomas Wagner',
+      department: 'Business Development Agency',
+      phone: '+52 442 181 7209',
+      email: 'wagner@thomaswagner.mx',
     },
     accounts: FIXED_ACCOUNTS.map((acc) => ({
       accountId: acc.id,
@@ -35,16 +35,14 @@ class ReportStore {
 
   public setReport(newReport: FullReportData): FullReportData {
     // Ensure all fixed accounts exist
-    const accountsMap = new Map(newReport.accounts.map((a) => [a.accountId, a]));
+    const accountsMap = new Map<string, AccountReport>(newReport.accounts.map((a) => [a.accountId, a]));
     const fullAccounts = FIXED_ACCOUNTS.map((fixed) => {
       const existing = accountsMap.get(fixed.id);
-      return (
-        existing || {
-          accountId: fixed.id,
-          accountName: fixed.name,
-          activities: [],
-        }
-      );
+      return {
+        accountId: fixed.id,
+        accountName: fixed.name,
+        activities: existing ? existing.activities : [],
+      };
     });
 
     this.data = {
@@ -102,6 +100,75 @@ class ReportStore {
       message: `Actividad agregada exitosamente a la cuenta ${account.accountName}`,
       activity: newActivity,
       accountName: account.accountName,
+    };
+  }
+
+  public batchAddActivities(
+    items: Array<{
+      accountIdentifier: string;
+      topic: string;
+      status?: ActivityStatus;
+      update?: string;
+    }>
+  ): { success: boolean; addedCount: number; results: Array<any> } {
+    const results = [];
+    let addedCount = 0;
+
+    for (const item of items) {
+      const res = this.addActivity(
+        item.accountIdentifier,
+        item.topic,
+        item.status || 'En proceso',
+        item.update || ''
+      );
+      results.push(res);
+      if (res.success) addedCount++;
+    }
+
+    return {
+      success: addedCount > 0,
+      addedCount,
+      results,
+    };
+  }
+
+  public getAccountsList(): Array<{ id: string; name: string; description: string; activityCount: number }> {
+    return FIXED_ACCOUNTS.map((acc) => {
+      const found = this.data.accounts.find((a) => a.accountId === acc.id);
+      return {
+        id: acc.id,
+        name: acc.name,
+        description: acc.description,
+        activityCount: found ? found.activities.length : 0,
+      };
+    });
+  }
+
+  public getAccountActivities(accountIdentifier: string): {
+    success: boolean;
+    accountName?: string;
+    activities?: ActivityItem[];
+    message?: string;
+  } {
+    const search = accountIdentifier.toLowerCase().trim();
+    const account = this.data.accounts.find(
+      (a) =>
+        a.accountId.toLowerCase() === search ||
+        a.accountName.toLowerCase().includes(search) ||
+        search.includes(a.accountName.toLowerCase())
+    );
+
+    if (!account) {
+      return {
+        success: false,
+        message: `No se encontró la cuenta '${accountIdentifier}'.`,
+      };
+    }
+
+    return {
+      success: true,
+      accountName: account.accountName,
+      activities: account.activities,
     };
   }
 

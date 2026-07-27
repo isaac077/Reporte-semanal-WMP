@@ -35,8 +35,8 @@ export const McpStatusModal: React.FC<McpStatusModalProps> = ({
 
   // Tester State
   const [selectedTool, setSelectedTool] = useState<string>('add_activity');
-  const [testAccount, setTestAccount] = useState<string>('WMP Mexico Advisors');
-  const [testTopic, setTestTopic] = useState<string>('Revisión de impuestos y cumplimiento');
+  const [testAccount, setTestAccount] = useState<string>('Thomas Wagner.mx');
+  const [testTopic, setTestTopic] = useState<string>('Estrategia de expansión digital y marcas');
   const [testStatus, setTestStatus] = useState<string>('En proceso');
   const [testUpdate, setTestUpdate] = useState<string>('Enviada documentación inicial al SAT');
   const [testResult, setTestResult] = useState<any>(null);
@@ -92,6 +92,19 @@ export const McpStatusModal: React.FC<McpStatusModalProps> = ({
         const res = await fetch('/api/report');
         const data = await res.json();
         setTestResult(data);
+      } else if (selectedTool === 'get_accounts_list') {
+        const res = await fetch('/api/report/accounts');
+        const data = await res.json();
+        setTestResult(data);
+      } else if (selectedTool === 'get_account_activities') {
+        const reportRes = await fetch('/api/report');
+        const reportData = await reportRes.json();
+        const foundAcc = reportData?.accounts?.find(
+          (a: any) =>
+            a.accountName.toLowerCase().includes(testAccount.toLowerCase()) ||
+            a.accountId.toLowerCase().includes(testAccount.toLowerCase())
+        );
+        setTestResult(foundAcc || { message: `No se encontró la cuenta ${testAccount}` });
       } else if (selectedTool === 'get_report_summary') {
         const res = await fetch('/api/report/summary');
         const data = await res.json();
@@ -298,21 +311,33 @@ export const McpStatusModal: React.FC<McpStatusModalProps> = ({
               <div className="bg-white rounded-xl p-4 border border-slate-200 space-y-3">
                 <h4 className="text-xs font-black text-slate-800 uppercase tracking-wide flex items-center space-x-1.5">
                   <Layers className="w-4 h-4 text-indigo-600" />
-                  <span>8 Herramientas MCP Habilitadas para el Agente</span>
+                  <span>12 Herramientas MCP Habilitadas para el Agente</span>
                 </h4>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                   <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
                     <span className="font-bold text-indigo-900 block">get_full_report</span>
-                    <span className="text-[11px] text-slate-500">Obtiene metadatos y actividades.</span>
+                    <span className="text-[11px] text-slate-500">Obtiene metadatos y todas las actividades.</span>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
+                    <span className="font-bold text-indigo-900 block">get_accounts_list</span>
+                    <span className="text-[11px] text-slate-500">Lista las cuentas corporativas configuradas.</span>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
+                    <span className="font-bold text-indigo-900 block">get_account_activities</span>
+                    <span className="text-[11px] text-slate-500">Consulta las actividades de una sola cuenta.</span>
                   </div>
                   <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
                     <span className="font-bold text-indigo-900 block">get_report_summary</span>
-                    <span className="text-[11px] text-slate-500">Métricas de avance y bloqueos.</span>
+                    <span className="text-[11px] text-slate-500">Métricas de avance, bloqueos y totales.</span>
                   </div>
                   <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
                     <span className="font-bold text-indigo-900 block">add_activity</span>
                     <span className="text-[11px] text-slate-500">Agrega tema, estatus y avance a una cuenta.</span>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
+                    <span className="font-bold text-indigo-900 block">batch_add_activities</span>
+                    <span className="text-[11px] text-slate-500">Agrega múltiples actividades en un solo paso.</span>
                   </div>
                   <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
                     <span className="font-bold text-indigo-900 block">update_activity</span>
@@ -325,6 +350,18 @@ export const McpStatusModal: React.FC<McpStatusModalProps> = ({
                   <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
                     <span className="font-bold text-indigo-900 block">update_metadata</span>
                     <span className="text-[11px] text-slate-500">Actualiza semana, fecha y responsable.</span>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
+                    <span className="font-bold text-indigo-900 block">download_pdf_report</span>
+                    <span className="text-[11px] text-slate-500">Genera y entrega el PDF en la conversación.</span>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
+                    <span className="font-bold text-indigo-900 block">load_sample_data</span>
+                    <span className="text-[11px] text-slate-500">Carga datos corporativos de prueba.</span>
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200">
+                    <span className="font-bold text-indigo-900 block">clear_report</span>
+                    <span className="text-[11px] text-slate-500">Limpia todas las actividades del reporte.</span>
                   </div>
                 </div>
               </div>
@@ -414,7 +451,9 @@ export const McpStatusModal: React.FC<McpStatusModalProps> = ({
                       className="w-full bg-white border border-slate-300 rounded-lg p-2 font-medium focus:ring-2 focus:ring-indigo-500"
                     >
                       <option value="add_activity">add_activity (Agregar Actividad)</option>
-                      <option value="get_full_report">get_full_report (Obtener Reporte)</option>
+                      <option value="get_full_report">get_full_report (Obtener Reporte Completo)</option>
+                      <option value="get_accounts_list">get_accounts_list (Listar Cuentas)</option>
+                      <option value="get_account_activities">get_account_activities (Actividades de una Cuenta)</option>
                       <option value="get_report_summary">get_report_summary (Resumen de Métricas)</option>
                       <option value="download_pdf_report">download_pdf_report (Generar y Descargar PDF)</option>
                       <option value="load_sample_data">load_sample_data (Cargar Muestra)</option>
@@ -422,7 +461,7 @@ export const McpStatusModal: React.FC<McpStatusModalProps> = ({
                     </select>
                   </div>
 
-                  {selectedTool === 'add_activity' && (
+                  {(selectedTool === 'add_activity' || selectedTool === 'get_account_activities') && (
                     <div>
                       <label className="block text-slate-700 font-bold mb-1">Cuenta Destino</label>
                       <select

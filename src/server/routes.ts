@@ -33,7 +33,7 @@ export function setupApiRoutes(app: Express) {
       const report = reportStore.getReport();
       const weekClean = (report.metadata.week || 'Semana').replace(/[^a-zA-Z0-9]/g, '_');
       const dateClean = (report.metadata.cutoffDate || '2026').replace(/[^a-zA-Z0-9-]/g, '_');
-      const filename = `Reporte_Semanal_WMP_${weekClean}_${dateClean}.pdf`;
+      const filename = `Reporte_Semanal_ThomasWagner_${weekClean}_${dateClean}.pdf`;
 
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
@@ -56,6 +56,21 @@ export function setupApiRoutes(app: Express) {
   // Get summary stats
   app.get('/api/report/summary', (req: Request, res: Response) => {
     res.json(reportStore.getSummaryStats());
+  });
+
+  // Get list of fixed accounts
+  app.get('/api/report/accounts', (req: Request, res: Response) => {
+    res.json(reportStore.getAccountsList());
+  });
+
+  // Batch add activities
+  app.post('/api/report/batch-activities', (req: Request, res: Response) => {
+    const { activities } = req.body;
+    if (!Array.isArray(activities)) {
+      return res.status(400).json({ success: false, message: 'activities debe ser un arreglo de objetos.' });
+    }
+    const result = reportStore.batchAddActivities(activities);
+    res.json(result);
   });
 
   // Update metadata
@@ -137,7 +152,7 @@ export function setupApiRoutes(app: Express) {
   // MCP Info Endpoint
   app.get('/api/mcp/info', (req: Request, res: Response) => {
     res.json({
-      mcpServer: 'WMP Weekly Report MCP Server',
+      mcpServer: 'Thomas Wagner Weekly Report MCP Server',
       version: '1.0.0',
       status: 'active',
       transports: {
@@ -148,13 +163,17 @@ export function setupApiRoutes(app: Express) {
       openApiSchemaUrl: '/api/openapi.json',
       availableTools: [
         'get_full_report',
+        'get_accounts_list',
+        'get_account_activities',
         'get_report_summary',
         'add_activity',
+        'batch_add_activities',
         'update_activity',
         'delete_activity',
         'update_metadata',
         'load_sample_data',
         'clear_report',
+        'download_pdf_report',
       ],
       resources: ['report://current', 'report://summary'],
       prompts: ['generate-executive-summary', 'review-blocked-projects'],
@@ -235,6 +254,22 @@ export function setupApiRoutes(app: Express) {
               inputSchema: { type: 'object', properties: {} },
             },
             {
+              name: 'get_accounts_list',
+              description: 'Obtiene la lista oficial de cuentas corporativas configuradas con sus IDs.',
+              inputSchema: { type: 'object', properties: {} },
+            },
+            {
+              name: 'get_account_activities',
+              description: 'Obtiene las actividades de una sola cuenta dada.',
+              inputSchema: {
+                type: 'object',
+                properties: {
+                  accountIdentifier: { type: 'string' },
+                },
+                required: ['accountIdentifier'],
+              },
+            },
+            {
               name: 'get_report_summary',
               description: 'Obtiene el resumen con métricas clave de estatus.',
               inputSchema: { type: 'object', properties: {} },
@@ -242,7 +277,7 @@ export function setupApiRoutes(app: Express) {
             {
               name: 'download_pdf_report',
               description:
-                'Genera el archivo PDF oficial del reporte semanal de WMP Mexico Advisors. Retorna el enlace de descarga directa y el archivo en Base64.',
+                'Genera el archivo PDF oficial del reporte semanal de Thomas Wagner.MX. Retorna el enlace de descarga directa y el archivo en Base64.',
               inputSchema: { type: 'object', properties: {} },
             },
             {
@@ -260,6 +295,32 @@ export function setupApiRoutes(app: Express) {
                   update: { type: 'string' },
                 },
                 required: ['accountIdentifier', 'topic'],
+              },
+            },
+            {
+              name: 'batch_add_activities',
+              description: 'Agrega múltiples actividades en un solo paso.',
+              inputSchema: {
+                type: 'object',
+                properties: {
+                  activities: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        accountIdentifier: { type: 'string' },
+                        topic: { type: 'string' },
+                        status: {
+                          type: 'string',
+                          enum: ['Pendiente', 'En proceso', 'Bloqueado', 'Completado'],
+                        },
+                        update: { type: 'string' },
+                      },
+                      required: ['accountIdentifier', 'topic'],
+                    },
+                  },
+                },
+                required: ['activities'],
               },
             },
             {
@@ -335,6 +396,40 @@ export function setupApiRoutes(app: Express) {
         };
       }
 
+      if (name === 'get_accounts_list') {
+        return {
+          jsonrpc: '2.0',
+          id,
+          result: {
+            content: [{ type: 'text', text: JSON.stringify(reportStore.getAccountsList(), null, 2) }],
+          },
+        };
+      }
+
+      if (name === 'get_account_activities') {
+        const res = reportStore.getAccountActivities(args.accountIdentifier);
+        return {
+          jsonrpc: '2.0',
+          id,
+          result: {
+            content: [{ type: 'text', text: JSON.stringify(res, null, 2) }],
+            isError: !res.success,
+          },
+        };
+      }
+
+      if (name === 'batch_add_activities') {
+        const res = reportStore.batchAddActivities(Array.isArray(args.activities) ? args.activities : []);
+        return {
+          jsonrpc: '2.0',
+          id,
+          result: {
+            content: [{ type: 'text', text: JSON.stringify(res, null, 2) }],
+            isError: !res.success,
+          },
+        };
+      }
+
       if (name === 'get_report_summary') {
         return {
           jsonrpc: '2.0',
@@ -351,7 +446,7 @@ export function setupApiRoutes(app: Express) {
         const base64Pdf = pdfBuffer.toString('base64');
         const weekClean = (report.metadata.week || 'Semana').replace(/[^a-zA-Z0-9]/g, '_');
         const dateClean = (report.metadata.cutoffDate || '2026').replace(/[^a-zA-Z0-9-]/g, '_');
-        const filename = `Reporte_Semanal_WMP_${weekClean}_${dateClean}.pdf`;
+        const filename = `Reporte_Semanal_ThomasWagner_${weekClean}_${dateClean}.pdf`;
 
         return {
           jsonrpc: '2.0',
@@ -360,7 +455,7 @@ export function setupApiRoutes(app: Express) {
             content: [
               {
                 type: 'text',
-                text: `✅ **Reporte Semanal generado exitosamente en PDF**\n\n📄 **Archivo:** \`${filename}\`\n👤 **Responsable:** ${report.metadata.responsible}\n📅 **Fecha de Corte:** ${report.metadata.cutoffDate}\n\n🔗 **Enlace de Descarga Directa:**\n[📥 Descargar ${filename}](/api/report/pdf)\n\n*El PDF incluye el formato oficial WMP Mexico Advisors.*`,
+                text: `✅ **Reporte Semanal generado exitosamente en PDF**\n\n📄 **Archivo:** \`${filename}\`\n👤 **Responsable:** ${report.metadata.responsible}\n📅 **Fecha de Corte:** ${report.metadata.cutoffDate}\n\n🔗 **Enlace de Descarga Directa:**\n[📥 Descargar ${filename}](/api/report/pdf)\n\n*El PDF incluye el formato oficial de Thomas Wagner.MX.*`,
               },
               {
                 type: 'resource',
@@ -530,15 +625,15 @@ export function setupApiRoutes(app: Express) {
     const openApiSpec = {
       openapi: '3.0.3',
       info: {
-        title: 'WMP Weekly Report MCP & ChatGPT Custom Action API',
+        title: 'Thomas Wagner.MX Weekly Report MCP & ChatGPT Custom Action API',
         description:
-          'API para controlar, consultar y modificar el Reporte Semanal de Estatus de WMP Mexico Advisors mediante agentes de IA como ChatGPT.',
+          'API para controlar, consultar y modificar el Reporte Semanal de Estatus de Thomas Wagner.MX mediante agentes de IA como ChatGPT.',
         version: '1.0.0',
       },
       servers: [
         {
           url: baseUrl,
-          description: 'Servidor principal WMP Reportes',
+          description: 'Servidor principal Thomas Wagner Reportes',
         },
       ],
       paths: {
@@ -547,7 +642,7 @@ export function setupApiRoutes(app: Express) {
             summary: 'Descargar el reporte semanal en formato PDF',
             operationId: 'downloadPdfReport',
             description:
-              'Genera y descarga el archivo PDF oficial con el formato corporativo de WMP Mexico Advisors.',
+              'Genera y descarga el archivo PDF oficial con el formato corporativo de Thomas Wagner.MX.',
             responses: {
               '200': {
                 description: 'Archivo PDF del reporte semanal',
@@ -714,13 +809,13 @@ export function setupApiRoutes(app: Express) {
                     properties: {
                       week: { type: 'string', example: 'Semana 30' },
                       cutoffDate: { type: 'string', example: '2026-07-24' },
-                      responsible: { type: 'string', example: 'Norma Castañeda' },
+                      responsible: { type: 'string', example: 'Thomas Wagner' },
                       department: {
                         type: 'string',
-                        example: 'Gerencia de Consultoría & Proyectos',
+                        example: 'Business Development Agency',
                       },
-                      phone: { type: 'string', example: '+52 442 209 6850' },
-                      email: { type: 'string', example: 'norma.castaneda@wmp-mexico.com' },
+                      phone: { type: 'string', example: '+52 442 181 7209' },
+                      email: { type: 'string', example: 'wagner@thomaswagner.mx' },
                     },
                   },
                 },

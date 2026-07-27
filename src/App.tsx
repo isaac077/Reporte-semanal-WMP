@@ -56,17 +56,15 @@ export default function App() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && parsed.metadata && Array.isArray(parsed.accounts)) {
-          // Asegurar que existan todas las cuentas fijas
-          const accountsMap = new Map(parsed.accounts.map((a: AccountReport) => [a.accountId, a]));
+          // Asegurar que existan todas las cuentas fijas y actualizar sus nombres
+          const accountsMap = new Map<string, AccountReport>(parsed.accounts.map((a: AccountReport) => [a.accountId, a]));
           const fullAccounts = FIXED_ACCOUNTS.map((fixed) => {
             const existing = accountsMap.get(fixed.id);
-            return (
-              existing || {
-                accountId: fixed.id,
-                accountName: fixed.name,
-                activities: [],
-              }
-            );
+            return {
+              accountId: fixed.id,
+              accountName: fixed.name,
+              activities: existing ? existing.activities : [],
+            };
           });
           return {
             metadata: {
@@ -106,7 +104,19 @@ export default function App() {
       if (res.ok) {
         const serverReport = await res.json();
         if (serverReport && serverReport.metadata && Array.isArray(serverReport.accounts)) {
-          setReportData(serverReport);
+          const accountsMap = new Map<string, AccountReport>(serverReport.accounts.map((a: AccountReport) => [a.accountId, a]));
+          const fullAccounts = FIXED_ACCOUNTS.map((fixed) => {
+            const existing = accountsMap.get(fixed.id);
+            return {
+              accountId: fixed.id,
+              accountName: fixed.name,
+              activities: existing ? existing.activities : [],
+            };
+          });
+          setReportData({
+            ...serverReport,
+            accounts: fullAccounts,
+          });
         }
       }
     } catch (e) {
@@ -357,39 +367,6 @@ export default function App() {
                 <span className="block text-[10px] text-rose-200 font-semibold uppercase">Bloqueados</span>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Callout de Agente ChatGPT / MCP */}
-        <div className="bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 rounded-xl p-3 px-4 text-white shadow-xs border border-indigo-800/50 mb-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center space-x-3">
-            <div className="p-1.5 bg-indigo-500/20 border border-indigo-400/30 rounded-lg text-indigo-300 shrink-0">
-              <Bot className="w-4 h-4" />
-            </div>
-            <div className="text-xs">
-              <span className="font-bold text-white mr-1.5">Control Inteligente con ChatGPT:</span>
-              <span className="text-slate-300">
-                Este sistema incluye un servidor MCP y OpenAPI para agregar o modificar actividades con voz o texto en ChatGPT.
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-2 shrink-0">
-            <button
-              onClick={syncWithServer}
-              type="button"
-              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 transition-colors cursor-pointer"
-              title="Sincronizar cambios recientes de ChatGPT"
-            >
-              <RefreshCw className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={() => setIsMcpModalOpen(true)}
-              type="button"
-              className="px-3 py-1 bg-indigo-500 hover:bg-indigo-600 text-white font-bold text-xs rounded-lg shadow-2xs transition-colors cursor-pointer"
-            >
-              Conectar ChatGPT
-            </button>
           </div>
         </div>
 

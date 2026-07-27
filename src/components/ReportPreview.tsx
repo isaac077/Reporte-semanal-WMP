@@ -15,24 +15,24 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
       {/* Contenedor Hoja Carta para Impresión / Renderizado PDF (8.5 x 11 pulgadas proporciones exactas) */}
       <div
         id="report-pdf-canvas-container"
-        className="bg-white text-slate-800 w-[794px] min-h-[1123px] p-[38px] shadow-2xl rounded-none relative flex flex-col justify-between font-sans box-border"
+        className="bg-white text-slate-800 w-[794px] min-h-[1027px] p-[38px] shadow-2xl rounded-none relative flex flex-col justify-between font-sans box-border"
         style={{
           fontFamily: 'Arial, Helvetica, sans-serif',
         }}
       >
         {/* ENCABEZADO SUPERIOR PDF */}
         <div id="pdf-general-info-block">
-          {/* Línea azul delgada de acento superior */}
-          <div className="w-full h-[3px] bg-[#0F3D64] mb-4" />
+          {/* Línea roja delgada de acento superior */}
+          <div className="w-full h-[3px] bg-[#B91C1C] mb-4" />
 
           {/* TITULO Y LOGO OFICIAL */}
           <div className="flex justify-between items-start mb-6">
             <div>
-              <h1 className="text-[22px] font-black text-[#0F3D64] tracking-tight uppercase leading-tight mb-0.5">
+              <h1 className="text-[22px] font-black text-[#B91C1C] tracking-tight uppercase leading-tight mb-0.5">
                 REPORTE SEMANAL DE ESTATUS
               </h1>
               <p className="text-[12px] text-[#64748B] font-medium">
-                Seguimiento de proyectos por cuenta
+                Thomas Wagner.MX • Business Development Agency
               </p>
             </div>
             <div className="shrink-0 pl-4">
@@ -44,7 +44,7 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
           <div className="mb-6 border border-[#CBD5E1] rounded-none overflow-hidden">
             <table className="w-full border-collapse text-left">
               <thead>
-                <tr className="bg-[#E9ECEF] text-[#0F3D64] text-[10px] font-bold uppercase tracking-wider border-b border-[#CBD5E1]">
+                <tr className="bg-[#F8FAFC] text-[#B91C1C] text-[10px] font-bold uppercase tracking-wider border-b border-[#CBD5E1]">
                   <th className="py-2 px-3 border-r border-[#CBD5E1] w-[20%]">SEMANA</th>
                   <th className="py-2 px-3 border-r border-[#CBD5E1] w-[30%]">FECHA DE CORTE</th>
                   <th className="py-2 px-3 w-[50%]">RESPONSABLE</th>
@@ -64,7 +64,7 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
                 </tr>
               </tbody>
               <thead>
-                <tr className="bg-[#E9ECEF] text-[#0F3D64] text-[10px] font-bold uppercase tracking-wider border-b border-[#CBD5E1]">
+                <tr className="bg-[#F8FAFC] text-[#B91C1C] text-[10px] font-bold uppercase tracking-wider border-b border-[#CBD5E1]">
                   <th className="py-2 px-3 border-r border-[#CBD5E1] w-[35%]">ÁREA / PUESTO</th>
                   <th className="py-2 px-3 border-r border-[#CBD5E1] w-[30%]">TELÉFONO</th>
                   <th className="py-2 px-3 w-[35%]">CORREO ELECTRÓNICO</th>
@@ -95,8 +95,8 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
             return (
               <div key={acc.accountId} className="pdf-account-card border border-[#CBD5E1] rounded-none overflow-hidden">
                 {/* Encabezado Nombre de la Cuenta */}
-                <div className="bg-[#E9ECEF] border-b border-[#CBD5E1] px-3 py-1.5 flex items-center justify-between">
-                  <h2 className="text-[13px] font-bold text-[#0F3D64]">
+                <div className="bg-[#F8FAFC] border-b border-[#CBD5E1] px-3 py-1.5 flex items-center justify-between">
+                  <h2 className="text-[13px] font-bold text-[#B91C1C]">
                     {acc.accountName}
                   </h2>
                 </div>
@@ -104,9 +104,9 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
                 {/* Tabla de Actividades */}
                 <table className="w-full border-collapse text-left">
                   <thead>
-                    <tr className="bg-[#0B4F82] text-white text-[10px] font-bold uppercase tracking-wider">
-                      <th className="py-1.5 px-3 border-r border-[#0B4F82] w-[38%]">
-                        TEMA
+                    <tr className="bg-[#B91C1C] text-white text-[10px] font-bold uppercase tracking-wider">
+                      <th className="py-1.5 px-3 border-r border-[#991B1B] w-[38%]">
+                        TEMA / PROYECTO
                       </th>
                       <th className="py-1.5 px-3 w-[62%]">
                         ESTATUS / ACTUALIZACIÓN
@@ -130,7 +130,7 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
                         return (
                           <tr key={act.id} className="text-[11px] text-[#1E293B] bg-[#FFFFFF] align-top">
                             {/* TEMA */}
-                            <td className="py-2.5 px-3 border-r border-[#CBD5E1] font-semibold text-[#0F3D64]">
+                            <td className="py-2.5 px-3 border-r border-[#CBD5E1] font-semibold text-[#1E293B]">
                               {act.topic || <span className="text-[#94A3B8] font-normal italic">Escribe el tema o proyecto</span>}
                             </td>
 
@@ -186,60 +186,40 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
           })}
         </div>
 
-        {/* PIE DE PÁGINA CORPORATIVO WMP */}
+        {/* PIE DE PÁGINA CORPORATIVO THOMAS WAGNER.MX */}
         <div id="pdf-corporate-footer" className="mt-10 pt-4 border-t border-[#CBD5E1] text-[#334155]">
-          <div className="grid grid-cols-12 gap-3 items-end text-[9px] leading-snug">
+          <div className="grid grid-cols-12 gap-3 items-center text-[9px] leading-snug">
             
-            {/* Columna Izquierda: Dirección Fiscal */}
+            {/* Columna Izquierda: Dirección Fiscal & Contacto */}
             <div className="col-span-5 font-medium">
-              <strong className="block text-[#0F3D64] font-bold text-[9.5px] mb-0.5">
-                WM+P Management Services S. de R.L. de C.V.
+              <strong className="block text-[#B91C1C] font-bold text-[10px] mb-0.5">
+                Thomas Wagner.MX
               </strong>
               <p className="text-[#475569]">
                 Level Tower B - 2. Floor Avenida Antea 1130<br />
                 76127 Jurica, Querétaro, México<br />
-                <span className="font-semibold text-[#0F3D64]">T: + 52 442 209 6850</span>
+                <span className="font-semibold text-[#B91C1C]">T: +52 442 181 7209 | +49 174 470 9939</span>
               </p>
             </div>
 
-            {/* Columna Centro: Logo Corporativo WMP */}
-            <div className="col-span-3 text-center flex flex-col items-center justify-center border-x border-[#E2E8F0] px-2 py-1">
+            {/* Columna Centro: Logo Corporativo Thomas Wagner */}
+            <div className="col-span-4 text-center flex flex-col items-center justify-center border-x border-[#E2E8F0] px-2 py-1">
               <WmpLogo size="lg" />
-              <span className="text-[7px] text-[#64748B] font-bold uppercase tracking-wider block mt-1">
-                Tax | Accounting | Audit | Legal | Digital | Consulting
+              <span className="text-[7.5px] text-[#64748B] font-bold uppercase tracking-wider block mt-1">
+                Business Development Agency
               </span>
             </div>
 
-            {/* Columna Derecha: Servicios y Oficinas */}
-            <div className="col-span-4 text-right flex justify-end space-x-3 text-[8.5px] text-[#475569]">
-              <div>
-                <span className="block font-semibold text-[#0F3D64]">Tax</span>
-                <span className="block font-semibold text-[#0F3D64]">Accounting</span>
-                <span className="block font-semibold text-[#0F3D64]">Audit</span>
-                <span className="block font-semibold text-[#0F3D64]">Payroll</span>
-                <span className="block font-semibold text-[#0F3D64]">Legal</span>
-                <span className="block font-semibold text-[#0F3D64]">Digital</span>
-                <span className="block font-semibold text-[#0F3D64]">Consulting</span>
-              </div>
-              <div className="border-l border-slate-200 pl-2">
-                <span className="block font-medium">Querétaro</span>
-                <span className="block font-medium">Mexico City</span>
-                <span className="block font-medium">Puebla</span>
-                <span className="block font-medium">Monterrey</span>
-                <span className="block font-medium">Stuttgart</span>
-                <span className="block font-medium">Greenville</span>
-                <span className="block font-medium">Shanghai</span>
-              </div>
-              <div className="border-l border-slate-200 pl-2 text-[8px]">
-                <strong className="block text-[#0F3D64]">E: Info@wmp.mx</strong>
-                <strong className="block text-[#0F3D64]">I: www.wmp.mx</strong>
-              </div>
+            {/* Columna Derecha: Web & Correo */}
+            <div className="col-span-3 text-right text-[8.5px] text-[#475569] space-y-0.5">
+              <strong className="block text-[#B91C1C]">E: wagner@thomaswagner.mx</strong>
+              <strong className="block text-[#B91C1C]">W: www.thomaswagner.mx</strong>
             </div>
 
           </div>
 
-          {/* Barra inferior sólida en azul corporativo */}
-          <div className="w-full h-2.5 bg-[#0B4F82] mt-2" />
+          {/* Barra inferior sólida en rojo corporativo */}
+          <div className="w-full h-2.5 bg-[#B91C1C] mt-3" />
         </div>
 
       </div>

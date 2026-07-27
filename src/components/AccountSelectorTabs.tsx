@@ -29,13 +29,13 @@ export const AccountSelectorTabs: React.FC<AccountSelectorTabsProps> = ({
     <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-3.5 mb-6">
       <div className="flex items-center justify-between mb-3 px-1">
         <div className="flex items-center space-x-2">
-          <Building2 className="w-4 h-4 text-[#0F3D64]" />
+          <Building2 className="w-4 h-4 text-[#B91C1C]" />
           <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
             Selección de Cuenta a Capturar
           </span>
         </div>
         <span className="text-xs text-slate-500 font-medium">
-          Total de actividades activas: <strong className="text-[#0F3D64] font-bold">{totalActivitiesAll}</strong>
+          Total de actividades activas: <strong className="text-[#B91C1C] font-bold">{totalActivitiesAll}</strong>
         </span>
       </div>
 
@@ -47,7 +47,7 @@ export const AccountSelectorTabs: React.FC<AccountSelectorTabsProps> = ({
           type="button"
           className={`inline-flex items-center px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
             selectedAccountId === 'all'
-              ? 'bg-[#0F3D64] text-white shadow-xs'
+              ? 'bg-[#B91C1C] text-white shadow-xs'
               : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
           }`}
         >
@@ -56,7 +56,7 @@ export const AccountSelectorTabs: React.FC<AccountSelectorTabsProps> = ({
           <span
             className={`ml-2 px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
               selectedAccountId === 'all'
-                ? 'bg-sky-500/30 text-white'
+                ? 'bg-red-500/30 text-white'
                 : 'bg-slate-200 text-slate-700'
             }`}
           >
@@ -76,7 +76,7 @@ export const AccountSelectorTabs: React.FC<AccountSelectorTabsProps> = ({
               type="button"
               className={`inline-flex items-center px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 isSelected
-                  ? 'bg-[#0F3D64] text-white shadow-xs'
+                  ? 'bg-[#B91C1C] text-white shadow-xs'
                   : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200'
               }`}
             >
@@ -85,8 +85,8 @@ export const AccountSelectorTabs: React.FC<AccountSelectorTabsProps> = ({
                 <span
                   className={`ml-2 px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
                     isSelected
-                      ? 'bg-sky-400/30 text-white'
-                      : 'bg-sky-100 text-sky-800'
+                      ? 'bg-red-400/30 text-white'
+                      : 'bg-red-100 text-red-800'
                   }`}
                 >
                   {count}
@@ -102,7 +102,7 @@ export const AccountSelectorTabs: React.FC<AccountSelectorTabsProps> = ({
         <select
           value={selectedAccountId}
           onChange={(e) => onSelectAccount(e.target.value)}
-          className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-lg text-slate-800 font-semibold focus:ring-2 focus:ring-[#0F3D64]/20 focus:border-[#0F3D64]"
+          className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-lg text-slate-800 font-semibold focus:ring-2 focus:ring-[#B91C1C]/20 focus:border-[#B91C1C]"
         >
           <option value="all">Todas las Cuentas ({totalActivitiesAll} actividades)</option>
           {FIXED_ACCOUNTS.map((acc) => {

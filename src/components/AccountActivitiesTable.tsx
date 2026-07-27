@@ -55,8 +55,8 @@ export const AccountActivitiesTable: React.FC<AccountActivitiesTableProps> = ({
       {/* Encabezado de la Sección de Cuenta */}
       <div className="bg-slate-100/80 border-b border-slate-200 px-4 sm:px-5 py-3 flex items-center justify-between">
         <div className="flex items-center space-x-2.5">
-          <div className="w-3 h-3 rounded-full bg-[#0F3D64]" />
-          <h3 className="text-base font-bold text-[#0F3D64] tracking-tight">
+          <div className="w-3 h-3 rounded-full bg-[#B91C1C]" />
+          <h3 className="text-base font-bold text-[#B91C1C] tracking-tight">
             {accountName}
           </h3>
           <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-200 text-slate-700">
@@ -67,7 +67,7 @@ export const AccountActivitiesTable: React.FC<AccountActivitiesTableProps> = ({
         <button
           onClick={handleAddRow}
           type="button"
-          className="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-lg text-white bg-[#0F3D64] hover:bg-[#0B4F82] shadow-2xs transition-colors cursor-pointer"
+          className="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-lg text-white bg-[#B91C1C] hover:bg-[#991B1B] shadow-2xs transition-colors cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5 mr-1" />
           Agregar Tema
@@ -83,7 +83,7 @@ export const AccountActivitiesTable: React.FC<AccountActivitiesTableProps> = ({
           <button
             onClick={handleAddRow}
             type="button"
-            className="inline-flex items-center px-3.5 py-1.5 text-xs font-semibold rounded-lg text-[#0F3D64] bg-sky-50 border border-sky-200 hover:bg-sky-100 transition-colors cursor-pointer"
+            className="inline-flex items-center px-3.5 py-1.5 text-xs font-semibold rounded-lg text-[#B91C1C] bg-red-50 border border-red-200 hover:bg-red-100 transition-colors cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5 mr-1" />
             Agregar primer tema para esta cuenta
@@ -93,14 +93,14 @@ export const AccountActivitiesTable: React.FC<AccountActivitiesTableProps> = ({
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-[#0B4F82] text-white text-xs font-bold uppercase tracking-wider">
-                <th className="py-2.5 px-4 w-[35%] sm:w-[32%] border-r border-[#0B4F82]">
+              <tr className="bg-[#B91C1C] text-white text-xs font-bold uppercase tracking-wider">
+                <th className="py-2.5 px-4 w-[35%] sm:w-[32%] border-r border-[#991B1B]">
                   TEMA O PROYECTO
                 </th>
-                <th className="py-2.5 px-4 w-[20%] sm:w-[18%] border-r border-[#0B4F82]">
+                <th className="py-2.5 px-4 w-[20%] sm:w-[18%] border-r border-[#991B1B]">
                   ESTATUS
                 </th>
-                <th className="py-2.5 px-4 w-[40%] sm:w-[45%] border-r border-[#0B4F82]">
+                <th className="py-2.5 px-4 w-[40%] sm:w-[45%] border-r border-[#991B1B]">
                   ACTUALIZACIÓN / AVANCE / SIGUIENTE PASO
                 </th>
                 <th className="py-2.5 px-3 w-[5%] text-center">
@@ -127,7 +127,7 @@ export const AccountActivitiesTable: React.FC<AccountActivitiesTableProps> = ({
                         onChange={(e) =>
                           handleFieldChange(act.id, 'topic', e.target.value)
                         }
-                        className="w-full px-3 py-1.5 text-xs sm:text-sm font-semibold bg-white border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0F3D64]/20 focus:border-[#0F3D64] text-slate-900"
+                        className="w-full px-3 py-1.5 text-xs sm:text-sm font-semibold bg-white border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#B91C1C]/20 focus:border-[#B91C1C] text-slate-900"
                       />
                     </td>
 
@@ -142,7 +142,7 @@ export const AccountActivitiesTable: React.FC<AccountActivitiesTableProps> = ({
                             e.target.value as ActivityStatus
                           )
                         }
-                        className={`w-full px-2.5 py-1.5 text-xs font-bold rounded-md border focus:outline-none focus:ring-2 focus:ring-[#0F3D64]/20 cursor-pointer ${badgeConfig.bgClass}`}
+                        className={`w-full px-2.5 py-1.5 text-xs font-bold rounded-md border focus:outline-none focus:ring-2 focus:ring-[#B91C1C]/20 cursor-pointer ${badgeConfig.bgClass}`}
                       >
                         {STATUS_OPTIONS.map((opt) => (
                           <option key={opt} value={opt} className="bg-white text-slate-800 font-semibold">
@@ -161,7 +161,7 @@ export const AccountActivitiesTable: React.FC<AccountActivitiesTableProps> = ({
                         onChange={(e) =>
                           handleFieldChange(act.id, 'update', e.target.value)
                         }
-                        className="w-full px-3 py-1.5 text-xs sm:text-sm bg-white border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0F3D64]/20 focus:border-[#0F3D64] text-slate-800 resize-y min-h-[42px]"
+                        className="w-full px-3 py-1.5 text-xs sm:text-sm bg-white border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#B91C1C]/20 focus:border-[#B91C1C] text-slate-800 resize-y min-h-[42px]"
                       />
                     </td>
 
@@ -189,7 +189,7 @@ export const AccountActivitiesTable: React.FC<AccountActivitiesTableProps> = ({
         <button
           onClick={handleAddRow}
           type="button"
-          className="text-xs text-[#0F3D64] hover:text-[#0B4F82] font-semibold hover:underline inline-flex items-center cursor-pointer"
+          className="text-xs text-[#B91C1C] hover:text-[#991B1B] font-semibold hover:underline inline-flex items-center cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5 mr-1" />
           + Agregar otra fila a {accountName}

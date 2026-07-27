@@ -4,10 +4,10 @@ export const SAMPLE_REPORT_DATA: FullReportData = {
   metadata: {
     week: 'Semana 30',
     cutoffDate: '2026-07-24',
-    responsible: 'Norma Castañeda',
-    department: 'Gerencia de Consultoría & Proyectos',
-    phone: '+52 442 209 6850',
-    email: 'norma.castaneda@wmp-mexico.com',
+    responsible: 'Thomas Wagner',
+    department: 'Business Development Agency',
+    phone: '+52 442 181 7209',
+    email: 'wagner@thomaswagner.mx',
   },
   accounts: [
     {
@@ -48,7 +48,7 @@ export const SAMPLE_REPORT_DATA: FullReportData = {
     },
     {
       accountId: 'consul',
-      accountName: 'Cónsul',
+      accountName: 'HK',
       activities: [
         {
           id: 'consul-1',

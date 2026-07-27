@@ -20,8 +20,8 @@ export function generateServerPdf(): Buffer {
   let y = margin;
 
   // Colors
-  const primaryNavy = [15, 61, 100]; // #0F3D64
-  const secondaryBlue = [30, 90, 145];
+  const primaryRed = [185, 28, 28]; // #B91C1C
+  const secondaryRed = [153, 27, 27];
   const darkGray = [30, 41, 59];
   const lightBg = [248, 250, 252];
   const borderGray = [226, 232, 240];
@@ -51,28 +51,28 @@ export function generateServerPdf(): Buffer {
   };
 
   const drawHeaderBar = () => {
-    doc.setFillColor(primaryNavy[0], primaryNavy[1], primaryNavy[2]);
+    doc.setFillColor(primaryRed[0], primaryRed[1], primaryRed[2]);
     doc.rect(0, 0, pageWidth, 6, 'F');
   };
 
   drawHeaderBar();
   y = 14;
 
-  // Header WMP Title & Logo text
-  doc.setTextColor(primaryNavy[0], primaryNavy[1], primaryNavy[2]);
+  // Header Title & Subtitle
+  doc.setTextColor(primaryRed[0], primaryRed[1], primaryRed[2]);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(18);
-  doc.text('WMP MEXICO ADVISORS', margin, y);
+  doc.text('THOMAS WAGNER.MX', margin, y);
 
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(100, 116, 139);
-  doc.text('REPORTE SEMANAL DE ESTATUS Y PROYECTOS', margin, y + 5);
+  doc.text('REPORTE SEMANAL DE ESTATUS - BUSINESS DEVELOPMENT AGENCY', margin, y + 5);
 
   // Date & Week on top right
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
-  doc.setTextColor(primaryNavy[0], primaryNavy[1], primaryNavy[2]);
+  doc.setTextColor(primaryRed[0], primaryRed[1], primaryRed[2]);
   doc.text(data.metadata.week.toUpperCase(), pageWidth - margin, y, { align: 'right' });
 
   doc.setFont('helvetica', 'normal');
@@ -126,14 +126,14 @@ export function generateServerPdf(): Buffer {
   checkNewPage(20);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
-  doc.setTextColor(primaryNavy[0], primaryNavy[1], primaryNavy[2]);
+  doc.setTextColor(primaryRed[0], primaryRed[1], primaryRed[2]);
   doc.text('RESUMEN EJECUTIVO DE AVANCE', margin, y);
 
   y += 4;
 
   const boxWidth = (contentWidth - 12) / 5;
   const metrics = [
-    { label: 'TOTAL', count: summary.totals.total, color: [15, 61, 100] },
+    { label: 'TOTAL', count: summary.totals.total, color: [185, 28, 28] },
     { label: 'COMPLETADO', count: summary.totals.completed, color: [22, 101, 52] },
     { label: 'EN PROCESO', count: summary.totals.inProgress, color: [3, 105, 161] },
     { label: 'BLOQUEADO', count: summary.totals.blocked, color: [153, 27, 27] },
@@ -164,7 +164,7 @@ export function generateServerPdf(): Buffer {
     checkNewPage(25);
 
     // Account Section Header
-    doc.setFillColor(primaryNavy[0], primaryNavy[1], primaryNavy[2]);
+    doc.setFillColor(primaryRed[0], primaryRed[1], primaryRed[2]);
     doc.rect(margin, y, contentWidth, 7, 'F');
 
     doc.setFont('helvetica', 'bold');
@@ -262,7 +262,7 @@ export function generateServerPdf(): Buffer {
     doc.setTextColor(148, 163, 184);
 
     doc.text(
-      'WMP Mexico Advisors • Documento Corporativo de Estatus Semanal',
+      'Thomas Wagner.MX • Business Development Agency • www.thomaswagner.mx',
       margin,
       pageHeight - 7
     );

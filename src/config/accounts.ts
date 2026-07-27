@@ -27,8 +27,8 @@ export const FIXED_ACCOUNTS: AccountConfig[] = [
   },
   {
     id: 'consul',
-    name: 'Cónsul',
-    description: 'Proyectos de consultoría empresarial y legal',
+    name: 'HK',
+    description: 'Proyectos de consultoría empresarial y representación HK',
   },
   {
     id: 'acensblue',

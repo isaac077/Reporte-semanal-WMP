@@ -3,7 +3,7 @@ import { FileText, Sparkles, Download, Eye, Bot } from 'lucide-react';
 import { WmpLogo } from './WmpLogo';
 
 interface HeaderProps {
-  onLoadSampleData: () => void;
+  onLoadSampleData?: () => void;
   onGeneratePdf: () => void;
   onOpenMcpModal: () => void;
   activeView: 'edit' | 'preview';
@@ -21,8 +21,8 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   return (
     <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
-      {/* Línea de acento azul superior */}
-      <div className="h-1.5 bg-gradient-to-r from-[#0F3D64] via-[#0B4F82] to-[#0284C7]" />
+      {/* Línea de acento rojo superior */}
+      <div className="h-1.5 bg-gradient-to-r from-[#B91C1C] via-[#991B1B] to-[#DC2626]" />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -33,15 +33,15 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="h-8 w-px bg-slate-200 hidden sm:block" />
             <div>
               <div className="flex items-center space-x-2">
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 text-[#0F3D64] border border-sky-200/80">
-                  Sistema de Reportes
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-50 text-[#B91C1C] border border-red-200/80">
+                  Business Development Agency
                 </span>
                 <button
                   onClick={onOpenMcpModal}
                   type="button"
-                  className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 transition-colors cursor-pointer"
+                  className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-900 text-white border border-slate-800 hover:bg-slate-800 transition-colors cursor-pointer"
                 >
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1 animate-pulse" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1 animate-pulse" />
                   Agente MCP
                 </button>
               </div>
@@ -58,22 +58,11 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={onOpenMcpModal}
               type="button"
-              className="inline-flex items-center px-3 py-1.5 text-xs font-bold rounded-lg text-indigo-950 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-colors cursor-pointer"
+              className="inline-flex items-center px-3 py-1.5 text-xs font-bold rounded-lg text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-300 transition-colors cursor-pointer"
               title="Abrir configuración y enlaces de conexión para ChatGPT y Servidor MCP"
             >
-              <Bot className="w-3.5 h-3.5 mr-1.5 text-indigo-600" />
+              <Bot className="w-3.5 h-3.5 mr-1.5 text-[#B91C1C]" />
               <span>Control ChatGPT / MCP</span>
-            </button>
-
-            {/* Cargar Datos de Ejemplo */}
-            <button
-              onClick={onLoadSampleData}
-              type="button"
-              className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer"
-              title="Pre-llenar con datos de muestra realistas"
-            >
-              <Sparkles className="w-3.5 h-3.5 mr-1.5 text-amber-600" />
-              <span>Ejemplo</span>
             </button>
 
             {/* Alternar Vista Captura / Vista Previa */}
@@ -83,7 +72,7 @@ export const Header: React.FC<HeaderProps> = ({
                 type="button"
                 className={`inline-flex items-center px-3 py-1 text-xs font-medium rounded-md transition-all cursor-pointer ${
                   activeView === 'edit'
-                    ? 'bg-white text-[#0F3D64] shadow-xs font-semibold'
+                    ? 'bg-white text-[#B91C1C] shadow-xs font-bold'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -96,7 +85,7 @@ export const Header: React.FC<HeaderProps> = ({
                 type="button"
                 className={`inline-flex items-center px-3 py-1 text-xs font-medium rounded-md transition-all cursor-pointer ${
                   activeView === 'preview'
-                    ? 'bg-white text-[#0F3D64] shadow-xs font-semibold'
+                    ? 'bg-white text-[#B91C1C] shadow-xs font-bold'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -110,7 +99,7 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={onGeneratePdf}
               disabled={isGeneratingPdf}
               type="button"
-              className="inline-flex items-center px-4 py-1.5 text-xs font-semibold rounded-lg text-white bg-[#0F3D64] hover:bg-[#0B4F82] shadow-sm shadow-[#0F3D64]/20 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center px-4 py-1.5 text-xs font-semibold rounded-lg text-white bg-[#B91C1C] hover:bg-[#991B1B] shadow-sm shadow-[#B91C1C]/20 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isGeneratingPdf ? (
                 <>

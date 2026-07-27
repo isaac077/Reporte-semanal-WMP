@@ -34,10 +34,34 @@ export function createMcpServer() {
         {
           name: 'get_full_report',
           description:
-            'Obtiene el reporte semanal completo con metadatos y todas las actividades desglosadas por cuenta (WMP Mexico Advisors, The WMP Club, Cónsul, Acensblue, Centro Alemán Querétaro, Thomas Wagner.mx).',
+            'Obtiene el reporte semanal completo con metadatos y todas las actividades desglosadas por cuenta (WMP Mexico Advisors, The WMP Club, HK, Acensblue, Centro Alemán Querétaro, Thomas Wagner.mx).',
           inputSchema: {
             type: 'object',
             properties: {},
+          },
+        },
+        {
+          name: 'get_accounts_list',
+          description:
+            'Obtiene la lista oficial de cuentas corporativas disponibles en el sistema con sus identificadores (ID y nombre), descripción y número de actividades registradas.',
+          inputSchema: {
+            type: 'object',
+            properties: {},
+          },
+        },
+        {
+          name: 'get_account_activities',
+          description:
+            'Obtiene la lista de actividades de una sola cuenta específica.',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              accountIdentifier: {
+                type: 'string',
+                description: 'Nombre o ID de la cuenta (ej. "HK", "wmp-mexico-advisors", "Acensblue", etc.)',
+              },
+            },
+            required: ['accountIdentifier'],
           },
         },
         {
@@ -59,7 +83,7 @@ export function createMcpServer() {
               accountIdentifier: {
                 type: 'string',
                 description:
-                  'Nombre o ID de la cuenta (ej. "WMP Mexico Advisors", "wmp-mexico-advisors", "The WMP Club", "Cónsul", "Acensblue", "Centro Alemán Querétaro", "Thomas Wagner.mx")',
+                  'Nombre o ID de la cuenta (ej. "WMP Mexico Advisors", "wmp-mexico-advisors", "The WMP Club", "HK", "Acensblue", "Centro Alemán Querétaro", "Thomas Wagner.mx")',
               },
               topic: {
                 type: 'string',
@@ -76,6 +100,35 @@ export function createMcpServer() {
               },
             },
             required: ['accountIdentifier', 'topic'],
+          },
+        },
+        {
+          name: 'batch_add_activities',
+          description:
+            'Agrega múltiples actividades en una sola llamada. Ideal cuando se recibe una lista o minuta con varias tareas para una o distintas cuentas.',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              activities: {
+                type: 'array',
+                description: 'Lista de actividades a agregar.',
+                items: {
+                  type: 'object',
+                  properties: {
+                    accountIdentifier: { type: 'string', description: 'Nombre o ID de la cuenta' },
+                    topic: { type: 'string', description: 'Tema o asunto' },
+                    status: {
+                      type: 'string',
+                      enum: ['Pendiente', 'En proceso', 'Bloqueado', 'Completado'],
+                      description: 'Estatus actual',
+                    },
+                    update: { type: 'string', description: 'Avance o detalle' },
+                  },
+                  required: ['accountIdentifier', 'topic'],
+                },
+              },
+            },
+            required: ['activities'],
           },
         },
         {
@@ -164,7 +217,7 @@ export function createMcpServer() {
         {
           name: 'download_pdf_report',
           description:
-            'Genera el archivo PDF oficial corporativo del reporte semanal de WMP Mexico Advisors. Retorna el enlace de descarga directo, el resumen en chat y el archivo codificado en Base64 para que el usuario o ChatGPT lo pueda descargar/enviar directamente en la conversación.',
+            'Genera el archivo PDF oficial corporativo del reporte semanal de Thomas Wagner.MX. Retorna el enlace de descarga directo, el resumen en chat y el archivo codificado en Base64 para que el usuario o ChatGPT lo pueda descargar/enviar directamente en la conversación.',
           inputSchema: {
             type: 'object',
             properties: {},
@@ -189,6 +242,46 @@ export function createMcpServer() {
                 text: JSON.stringify(report, null, 2),
               },
             ],
+          };
+        }
+
+        case 'get_accounts_list': {
+          const accounts = reportStore.getAccountsList();
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(accounts, null, 2),
+              },
+            ],
+          };
+        }
+
+        case 'get_account_activities': {
+          const { accountIdentifier } = args as any;
+          const result = reportStore.getAccountActivities(accountIdentifier);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2),
+              },
+            ],
+            isError: !result.success,
+          };
+        }
+
+        case 'batch_add_activities': {
+          const { activities } = args as any;
+          const result = reportStore.batchAddActivities(Array.isArray(activities) ? activities : []);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2),
+              },
+            ],
+            isError: !result.success,
           };
         }
 
@@ -300,13 +393,13 @@ export function createMcpServer() {
           const base64Pdf = pdfBuffer.toString('base64');
           const weekClean = (report.metadata.week || 'Semana').replace(/[^a-zA-Z0-9]/g, '_');
           const dateClean = (report.metadata.cutoffDate || '2026').replace(/[^a-zA-Z0-9-]/g, '_');
-          const filename = `Reporte_Semanal_WMP_${weekClean}_${dateClean}.pdf`;
+          const filename = `Reporte_Semanal_ThomasWagner_${weekClean}_${dateClean}.pdf`;
 
           return {
             content: [
               {
                 type: 'text',
-                text: `✅ **Reporte Semanal generado exitosamente en PDF**\n\n📄 **Archivo:** \`${filename}\`\n👤 **Responsable:** ${report.metadata.responsible}\n📅 **Fecha de Corte:** ${report.metadata.cutoffDate}\n\n🔗 **Enlace de Descarga Directa:**\n[📥 Descargar ${filename}](/api/report/pdf)\n\n*El PDF incluye el formato oficial WMP Mexico Advisors con resumen ejecutivo, colores institucionales y el desglose de todas las cuentas y proyectos.*`,
+                text: `✅ **Reporte Semanal generado exitosamente en PDF**\n\n📄 **Archivo:** \`${filename}\`\n👤 **Responsable:** ${report.metadata.responsible}\n📅 **Fecha de Corte:** ${report.metadata.cutoffDate}\n\n🔗 **Enlace de Descarga Directa:**\n[📥 Descargar ${filename}](/api/report/pdf)\n\n*El PDF incluye el formato oficial de Thomas Wagner.MX con resumen ejecutivo, branding rojo corporativo y el desglose de todas las cuentas y proyectos.*`,
               },
               {
                 type: 'resource',
