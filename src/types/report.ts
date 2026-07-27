@@ -18,6 +18,8 @@ export interface GeneralMetadata {
   cutoffDate: string;     // e.g. "2026-07-24" or "24/07/2026"
   responsible: string;    // e.g. "Juan Pérez"
   department: string;     // e.g. "Consultoría / Sr. Advisor"
+  phone?: string;         // e.g. "+52 442 209 6850"
+  email?: string;         // e.g. "ejemplo@wmp.mx"
 }
 
 export interface FullReportData {

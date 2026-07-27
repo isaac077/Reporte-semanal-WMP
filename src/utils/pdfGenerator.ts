@@ -86,6 +86,119 @@ export async function generatePdfFromElement(
             }
           }
         });
+
+        // 3. Centrado perfecto de badges de estatus para html2canvas
+        const pdfBadges = Array.from(pdfContainer.querySelectorAll('.pdf-status-badge')) as HTMLElement[];
+        pdfBadges.forEach((badgeEl) => {
+          badgeEl.style.display = 'inline-block';
+          badgeEl.style.lineHeight = '1';
+          badgeEl.style.paddingTop = '0px';
+          badgeEl.style.paddingBottom = '8px';
+          badgeEl.style.paddingLeft = '7px';
+          badgeEl.style.paddingRight = '7px';
+          badgeEl.style.fontSize = '9px';
+          badgeEl.style.fontWeight = 'bold';
+          badgeEl.style.textAlign = 'center';
+          badgeEl.style.verticalAlign = 'top';
+          badgeEl.style.position = 'relative';
+          badgeEl.style.top = '-5px';
+          badgeEl.style.margin = '0';
+          badgeEl.style.boxSizing = 'border-box';
+          if (badgeEl.parentElement) {
+            badgeEl.parentElement.style.display = 'block';
+            badgeEl.parentElement.style.margin = '0 0 1px 0';
+            badgeEl.parentElement.style.padding = '0';
+            badgeEl.parentElement.style.lineHeight = '1';
+          }
+        });
+
+        // 4. Control inteligente de saltos de página para no cortar tarjetas, filas ni pie de página
+        const containerWidth = pdfContainer.offsetWidth || 794;
+        const PAGE_HEIGHT_PX = containerWidth * (279.4 / 215.9); // ~1027.53px
+        const TOP_MARGIN_PX = 38;
+        const BOTTOM_MARGIN_PX = 38;
+        const USABLE_PAGE_HEIGHT = PAGE_HEIGHT_PX - TOP_MARGIN_PX - BOTTOM_MARGIN_PX; // ~951.53px
+
+        const getContainerTop = (el: HTMLElement) => {
+          const elRect = el.getBoundingClientRect();
+          const containerRect = pdfContainer.getBoundingClientRect();
+          return elRect.top - containerRect.top;
+        };
+
+        // a) Ajustar tarjetas de cuentas (o sus filas)
+        const accountCards = Array.from(pdfContainer.querySelectorAll('.pdf-account-card')) as HTMLElement[];
+        accountCards.forEach((card) => {
+          const cardTop = getContainerTop(card);
+          const cardHeight = card.offsetHeight;
+          const cardBottom = cardTop + cardHeight;
+          const p = Math.floor(cardTop / PAGE_HEIGHT_PX) + 1;
+          const usableBottom = p * PAGE_HEIGHT_PX - BOTTOM_MARGIN_PX;
+
+          if (cardBottom > usableBottom) {
+            if (cardHeight <= USABLE_PAGE_HEIGHT) {
+              // La tarjeta entera cabe en 1 página sola -> mover la tarjeta completa al inicio de la siguiente página
+              const targetTop = p * PAGE_HEIGHT_PX + TOP_MARGIN_PX;
+              const spacerHeight = Math.max(0, targetTop - cardTop);
+              if (spacerHeight > 0) {
+                const spacer = clonedDoc.createElement('div');
+                spacer.style.height = `${spacerHeight}px`;
+                spacer.style.width = '100%';
+                spacer.style.clear = 'both';
+                card.parentNode?.insertBefore(spacer, card);
+              }
+            } else {
+              // La tarjeta es más alta que una página -> evaluar fila por fila (tr)
+              const rows = Array.from(card.querySelectorAll('tbody tr')) as HTMLElement[];
+              rows.forEach((row) => {
+                const rowTop = getContainerTop(row);
+                const rowHeight = row.offsetHeight;
+                const rowBottom = rowTop + rowHeight;
+                const rowPage = Math.floor(rowTop / PAGE_HEIGHT_PX) + 1;
+                const rowUsableBottom = rowPage * PAGE_HEIGHT_PX - BOTTOM_MARGIN_PX;
+
+                if (rowBottom > rowUsableBottom) {
+                  const targetTop = rowPage * PAGE_HEIGHT_PX + TOP_MARGIN_PX;
+                  const spacerHeight = Math.max(0, targetTop - rowTop);
+                  if (spacerHeight > 0) {
+                    const spacerTr = clonedDoc.createElement('tr');
+                    spacerTr.className = 'pdf-spacer-row';
+                    const spacerTd = clonedDoc.createElement('td');
+                    spacerTd.colSpan = 10;
+                    spacerTd.style.height = `${spacerHeight}px`;
+                    spacerTd.style.padding = '0';
+                    spacerTd.style.margin = '0';
+                    spacerTd.style.border = 'none';
+                    spacerTd.style.background = 'transparent';
+                    spacerTr.appendChild(spacerTd);
+                    row.parentNode?.insertBefore(spacerTr, row);
+                  }
+                }
+              });
+            }
+          }
+        });
+
+        // b) Ajustar pie de página corporativo si se corta
+        const footer = pdfContainer.querySelector('#pdf-corporate-footer') as HTMLElement | null;
+        if (footer) {
+          const footerTop = getContainerTop(footer);
+          const footerHeight = footer.offsetHeight;
+          const footerBottom = footerTop + footerHeight;
+          const p = Math.floor(footerTop / PAGE_HEIGHT_PX) + 1;
+          const usableBottom = p * PAGE_HEIGHT_PX - BOTTOM_MARGIN_PX;
+
+          if (footerBottom > usableBottom) {
+            const targetTop = p * PAGE_HEIGHT_PX + TOP_MARGIN_PX;
+            const spacerHeight = Math.max(0, targetTop - footerTop);
+            if (spacerHeight > 0) {
+              const spacer = clonedDoc.createElement('div');
+              spacer.style.height = `${spacerHeight}px`;
+              spacer.style.width = '100%';
+              spacer.style.clear = 'both';
+              footer.parentNode?.insertBefore(spacer, footer);
+            }
+          }
+        }
       }
 
       if (clonedDoc.body.contains(tempDiv)) {

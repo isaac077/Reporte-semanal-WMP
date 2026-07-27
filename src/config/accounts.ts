@@ -40,4 +40,9 @@ export const FIXED_ACCOUNTS: AccountConfig[] = [
     name: 'Centro Alemán Querétaro',
     description: 'Centro de formación y servicios de vinculación alemana',
   },
+  {
+    id: 'thomas-wagner-mx',
+    name: 'Thomas Wagner.mx',
+    description: 'Consultoría y soluciones estratégicas Thomas Wagner.mx',
+  },
 ];

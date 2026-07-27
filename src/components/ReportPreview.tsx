@@ -21,7 +21,7 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
         }}
       >
         {/* ENCABEZADO SUPERIOR PDF */}
-        <div>
+        <div id="pdf-general-info-block">
           {/* Línea azul delgada de acento superior */}
           <div className="w-full h-[3px] bg-[#0F3D64] mb-4" />
 
@@ -46,121 +46,148 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
               <thead>
                 <tr className="bg-[#E9ECEF] text-[#0F3D64] text-[10px] font-bold uppercase tracking-wider border-b border-[#CBD5E1]">
                   <th className="py-2 px-3 border-r border-[#CBD5E1] w-[20%]">SEMANA</th>
-                  <th className="py-2 px-3 border-r border-[#CBD5E1] w-[25%]">FECHA DE CORTE</th>
-                  <th className="py-2 px-3 border-r border-[#CBD5E1] w-[30%]">RESPONSABLE</th>
-                  <th className="py-2 px-3 w-[25%]">ÁREA / PUESTO</th>
+                  <th className="py-2 px-3 border-r border-[#CBD5E1] w-[30%]">FECHA DE CORTE</th>
+                  <th className="py-2 px-3 w-[50%]">RESPONSABLE</th>
                 </tr>
               </thead>
               <tbody>
-                <tr className="text-[12px] text-[#1E293B] bg-[#FFFFFF]">
+                <tr className="text-[11px] text-[#1E293B] bg-[#FFFFFF] border-b border-[#CBD5E1]">
                   <td className="py-2 px-3 border-r border-[#CBD5E1] font-medium">
                     {metadata.week || <span className="text-[#94A3B8] italic">Escribe aquí</span>}
                   </td>
                   <td className="py-2 px-3 border-r border-[#CBD5E1] font-medium">
                     {formatDateDisplay(metadata.cutoffDate) || <span className="text-[#94A3B8] italic">dd/mm/aaaa</span>}
                   </td>
-                  <td className="py-2 px-3 border-r border-[#CBD5E1] font-medium">
+                  <td className="py-2 px-3 font-medium">
                     {metadata.responsible || <span className="text-[#94A3B8] italic">Nombre</span>}
                   </td>
-                  <td className="py-2 px-3 font-medium">
+                </tr>
+              </tbody>
+              <thead>
+                <tr className="bg-[#E9ECEF] text-[#0F3D64] text-[10px] font-bold uppercase tracking-wider border-b border-[#CBD5E1]">
+                  <th className="py-2 px-3 border-r border-[#CBD5E1] w-[35%]">ÁREA / PUESTO</th>
+                  <th className="py-2 px-3 border-r border-[#CBD5E1] w-[30%]">TELÉFONO</th>
+                  <th className="py-2 px-3 w-[35%]">CORREO ELECTRÓNICO</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="text-[11px] text-[#1E293B] bg-[#FFFFFF]">
+                  <td className="py-2 px-3 border-r border-[#CBD5E1] font-medium">
                     {metadata.department || <span className="text-[#94A3B8] italic">Área o puesto</span>}
+                  </td>
+                  <td className="py-2 px-3 border-r border-[#CBD5E1] font-medium">
+                    {metadata.phone || <span className="text-[#94A3B8] italic">Teléfono</span>}
+                  </td>
+                  <td className="py-2 px-3 font-medium">
+                    {metadata.email || <span className="text-[#94A3B8] italic">Correo</span>}
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
+        </div>
 
-          {/* SECCIONES POR CUENTA */}
-          <div className="space-y-4">
-            {accounts.map((acc) => {
-              const hasActivities = acc.activities.length > 0;
+        {/* SECCIONES POR CUENTA */}
+        <div id="pdf-accounts-container" className="space-y-4">
+          {accounts.map((acc) => {
+            const hasActivities = acc.activities.length > 0;
 
-              return (
-                <div key={acc.accountId} className="border border-[#CBD5E1] rounded-none overflow-hidden">
-                  {/* Encabezado Nombre de la Cuenta */}
-                  <div className="bg-[#E9ECEF] border-b border-[#CBD5E1] px-3 py-1.5 flex items-center justify-between">
-                    <h2 className="text-[13px] font-bold text-[#0F3D64]">
-                      {acc.accountName}
-                    </h2>
-                  </div>
-
-                  {/* Tabla de Actividades */}
-                  <table className="w-full border-collapse text-left">
-                    <thead>
-                      <tr className="bg-[#0B4F82] text-white text-[10px] font-bold uppercase tracking-wider">
-                        <th className="py-1.5 px-3 border-r border-[#0B4F82] w-[38%]">
-                          TEMA
-                        </th>
-                        <th className="py-1.5 px-3 w-[62%]">
-                          ESTATUS / ACTUALIZACIÓN
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#CBD5E1]">
-                      {!hasActivities ? (
-                        <tr className="text-[11px] text-[#64748B] italic bg-[#FFFFFF]">
-                          <td className="py-2 px-3 border-r border-[#CBD5E1]">
-                            Escribe el tema o proyecto
-                          </td>
-                          <td className="py-2 px-3">
-                            Avance, pendiente, bloqueo o siguiente paso
-                          </td>
-                        </tr>
-                      ) : (
-                        acc.activities.map((act) => {
-                          const badge = getStatusBadgeConfig(act.status);
-
-                          return (
-                            <tr key={act.id} className="text-[11px] text-[#1E293B] bg-[#FFFFFF] align-top">
-                              {/* TEMA */}
-                              <td className="py-2.5 px-3 border-r border-[#CBD5E1] font-semibold text-[#0F3D64]">
-                                {act.topic || <span className="text-[#94A3B8] font-normal italic">Escribe el tema o proyecto</span>}
-                              </td>
-
-                              {/* ESTATUS Y ACTUALIZACION */}
-                              <td className="py-2.5 px-3">
-                                <div className="flex flex-col space-y-1">
-                                  {/* Badge de Estatus */}
-                                  <div className="flex items-center">
-                                    <span
-                                      className="inline-block px-2 py-0.5 rounded-xs text-[9px] font-bold uppercase tracking-wide border shadow-2xs"
-                                      style={{
-                                        backgroundColor: badge.badgeBgPdf,
-                                        color: badge.pdfColor,
-                                        borderColor: badge.pdfColor,
-                                      }}
-                                    >
-                                      {act.status}
-                                    </span>
-                                  </div>
-
-                                  {/* Texto de Actualización */}
-                                  <p className="text-[11px] text-[#334155] leading-relaxed whitespace-pre-wrap">
-                                    {act.update || <span className="text-[#94A3B8] italic">Avance, pendiente, bloqueo o siguiente paso</span>}
-                                  </p>
-                                </div>
-                              </td>
-                            </tr>
-                          );
-                        })
-                      )}
-                    </tbody>
-                  </table>
+            return (
+              <div key={acc.accountId} className="pdf-account-card border border-[#CBD5E1] rounded-none overflow-hidden">
+                {/* Encabezado Nombre de la Cuenta */}
+                <div className="bg-[#E9ECEF] border-b border-[#CBD5E1] px-3 py-1.5 flex items-center justify-between">
+                  <h2 className="text-[13px] font-bold text-[#0F3D64]">
+                    {acc.accountName}
+                  </h2>
                 </div>
-              );
-            })}
-          </div>
 
-          {/* TIP INFERIOR */}
-          <div className="mt-2 text-right">
-            <span className="text-[10px] text-[#64748B] italic">
-              Tip: en la última celda, Tab agrega una nueva fila con el mismo formato.
-            </span>
-          </div>
+                {/* Tabla de Actividades */}
+                <table className="w-full border-collapse text-left">
+                  <thead>
+                    <tr className="bg-[#0B4F82] text-white text-[10px] font-bold uppercase tracking-wider">
+                      <th className="py-1.5 px-3 border-r border-[#0B4F82] w-[38%]">
+                        TEMA
+                      </th>
+                      <th className="py-1.5 px-3 w-[62%]">
+                        ESTATUS / ACTUALIZACIÓN
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#CBD5E1]">
+                    {!hasActivities ? (
+                      <tr className="text-[11px] text-[#64748B] italic bg-[#FFFFFF]">
+                        <td className="py-2 px-3 border-r border-[#CBD5E1]">
+                          Escribe el tema o proyecto
+                        </td>
+                        <td className="py-2 px-3">
+                          Avance, pendiente, bloqueo o siguiente paso
+                        </td>
+                      </tr>
+                    ) : (
+                      acc.activities.map((act) => {
+                        const badge = getStatusBadgeConfig(act.status);
+
+                        return (
+                          <tr key={act.id} className="text-[11px] text-[#1E293B] bg-[#FFFFFF] align-top">
+                            {/* TEMA */}
+                            <td className="py-2.5 px-3 border-r border-[#CBD5E1] font-semibold text-[#0F3D64]">
+                              {act.topic || <span className="text-[#94A3B8] font-normal italic">Escribe el tema o proyecto</span>}
+                            </td>
+
+                            {/* ESTATUS Y ACTUALIZACION */}
+                            <td className="py-2.5 px-3">
+                              <div>
+                                {/* Badge de Estatus */}
+                                <div style={{ display: 'block', marginBottom: '1px', lineHeight: '1' }}>
+                                  <span
+                                    className="pdf-status-badge"
+                                    style={{
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      backgroundColor: badge.badgeBgPdf,
+                                      color: badge.pdfColor,
+                                      border: `1px solid ${badge.pdfColor}`,
+                                      borderRadius: '2px',
+                                      fontSize: '9px',
+                                      fontWeight: 700,
+                                      textTransform: 'uppercase',
+                                      letterSpacing: '0.025em',
+                                      paddingTop: '0px',
+                                      paddingBottom: '8px',
+                                      paddingLeft: '7px',
+                                      paddingRight: '7px',
+                                      lineHeight: '1',
+                                      textAlign: 'center',
+                                      verticalAlign: 'top',
+                                      position: 'relative',
+                                      top: '-5px',
+                                      boxSizing: 'border-box',
+                                    }}
+                                  >
+                                    {act.status}
+                                  </span>
+                                </div>
+
+                                {/* Texto de Actualización */}
+                                <p className="text-[11px] text-[#334155] leading-relaxed whitespace-pre-wrap">
+                                  {act.update || <span className="text-[#94A3B8] italic">Avance, pendiente, bloqueo o siguiente paso</span>}
+                                </p>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            );
+          })}
         </div>
 
         {/* PIE DE PÁGINA CORPORATIVO WMP */}
-        <div className="mt-10 pt-4 border-t border-[#CBD5E1] text-[#334155]">
+        <div id="pdf-corporate-footer" className="mt-10 pt-4 border-t border-[#CBD5E1] text-[#334155]">
           <div className="grid grid-cols-12 gap-3 items-end text-[9px] leading-snug">
             
             {/* Columna Izquierda: Dirección Fiscal */}

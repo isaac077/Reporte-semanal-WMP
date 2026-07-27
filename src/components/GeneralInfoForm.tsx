@@ -1,6 +1,6 @@
 import React from 'react';
 import { GeneralMetadata } from '../types/report';
-import { Calendar, User, Briefcase, Clock } from 'lucide-react';
+import { Calendar, User, Briefcase, Clock, Phone, Mail } from 'lucide-react';
 import { getWeekNumberFromDate } from '../utils/helpers';
 
 interface GeneralInfoFormProps {
@@ -39,7 +39,7 @@ export const GeneralInfoForm: React.FC<GeneralInfoFormProps> = ({ metadata, onCh
         </span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Semana */}
         <div>
           <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5 flex items-center">
@@ -95,6 +95,36 @@ export const GeneralInfoForm: React.FC<GeneralInfoFormProps> = ({ metadata, onCh
             placeholder="Ej. Consultoría Sr."
             value={metadata.department}
             onChange={(e) => handleChange('department', e.target.value)}
+            className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0F3D64]/20 focus:border-[#0F3D64] focus:bg-white transition-all text-slate-800 font-medium"
+          />
+        </div>
+
+        {/* Teléfono */}
+        <div>
+          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5 flex items-center">
+            <Phone className="w-3.5 h-3.5 mr-1 text-[#0F3D64]" />
+            Teléfono
+          </label>
+          <input
+            type="text"
+            placeholder="Ej. +52 442 209 6850"
+            value={metadata.phone || ''}
+            onChange={(e) => handleChange('phone', e.target.value)}
+            className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0F3D64]/20 focus:border-[#0F3D64] focus:bg-white transition-all text-slate-800 font-medium"
+          />
+        </div>
+
+        {/* Correo Electrónico */}
+        <div>
+          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5 flex items-center">
+            <Mail className="w-3.5 h-3.5 mr-1 text-[#0F3D64]" />
+            Correo Electrónico
+          </label>
+          <input
+            type="email"
+            placeholder="ejemplo@wmp.mx"
+            value={metadata.email || ''}
+            onChange={(e) => handleChange('email', e.target.value)}
             className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0F3D64]/20 focus:border-[#0F3D64] focus:bg-white transition-all text-slate-800 font-medium"
           />
         </div>

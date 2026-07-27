@@ -1,7 +1,7 @@
 import React from 'react';
 import { AccountReport, ActivityItem, ActivityStatus } from '../types/report';
 import { getStatusBadgeConfig } from '../utils/helpers';
-import { Plus, Trash2, ArrowUpDown, CornerDownRight } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 
 interface AccountActivitiesTableProps {
   accountData: AccountReport;
@@ -184,12 +184,8 @@ export const AccountActivitiesTable: React.FC<AccountActivitiesTableProps> = ({
         </div>
       )}
 
-      {/* Pie de tabla con botón para agregar rápida y nota */}
-      <div className="bg-slate-50 border-t border-slate-200 px-4 py-2.5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
-        <div className="flex items-center space-x-1">
-          <CornerDownRight className="w-3.5 h-3.5 text-slate-400" />
-          <span>Tip: Cada actividad se incluirá directamente en la versión oficial del PDF.</span>
-        </div>
+      {/* Pie de tabla con botón para agregar rápida */}
+      <div className="bg-slate-50 border-t border-slate-200 px-4 py-2 flex items-center justify-end text-xs text-slate-500">
         <button
           onClick={handleAddRow}
           type="button"

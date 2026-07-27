@@ -33,6 +33,8 @@ const createDefaultReportData = (): FullReportData => {
       cutoffDate: todayStr,
       responsible: '',
       department: '',
+      phone: '',
+      email: '',
     },
     accounts: FIXED_ACCOUNTS.map((acc) => ({
       accountId: acc.id,
@@ -63,7 +65,11 @@ export default function App() {
             );
           });
           return {
-            metadata: parsed.metadata,
+            metadata: {
+              ...parsed.metadata,
+              phone: parsed.metadata.phone || '',
+              email: parsed.metadata.email || '',
+            },
             accounts: fullAccounts,
           };
         }

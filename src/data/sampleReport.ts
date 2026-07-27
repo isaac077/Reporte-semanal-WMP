@@ -6,6 +6,8 @@ export const SAMPLE_REPORT_DATA: FullReportData = {
     cutoffDate: '2026-07-24',
     responsible: 'Norma Castañeda',
     department: 'Gerencia de Consultoría & Proyectos',
+    phone: '+52 442 209 6850',
+    email: 'norma.castaneda@wmp-mexico.com',
   },
   accounts: [
     {
@@ -89,6 +91,18 @@ export const SAMPLE_REPORT_DATA: FullReportData = {
           topic: 'Convenio de Formación Dual 2026-2027',
           status: 'Pendiente',
           update: 'Siguiente paso: Firma protocolaria de convenio institucional el próximo 10 de agosto.',
+        },
+      ],
+    },
+    {
+      accountId: 'thomas-wagner-mx',
+      accountName: 'Thomas Wagner.mx',
+      activities: [
+        {
+          id: 'tw-1',
+          topic: 'Estrategia de Expansión Digital y Marcas',
+          status: 'En proceso',
+          update: 'Evaluación de propuesta comercial y registro de propiedad industrial.',
         },
       ],
     },
