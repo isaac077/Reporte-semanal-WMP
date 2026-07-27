@@ -6,6 +6,17 @@ import { generateServerPdf } from './pdfServerGenerator';
 import { ActivityStatus } from '../types/report';
 
 export function setupApiRoutes(app: Express) {
+  // CORS Middleware for Vercel & Remote Clients
+  app.use((req: Request, res: Response, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, mcp-session-id, mcp-version');
+    if (req.method === 'OPTIONS') {
+      return res.status(200).end();
+    }
+    next();
+  });
+
   // ==========================================
   // 1. REST API ENDPOINTS FOR REPORT DATA
   // ==========================================
@@ -153,6 +164,13 @@ export function setupApiRoutes(app: Express) {
   // MCP SSE Connection Endpoint
   app.get('/api/mcp/sse', async (req: Request, res: Response) => {
     console.log('[MCP] SSE connection client connected');
+
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache, no-transform');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
     const transport = new SSEServerTransport('/api/mcp/message', res);
     const mcpServer = createMcpServer();
 
@@ -166,286 +184,337 @@ export function setupApiRoutes(app: Express) {
     await mcpServer.connect(transport);
   });
 
-  // MCP SSE Message POST Endpoint
-  app.post('/api/mcp/message', async (req: Request, res: Response) => {
-    const sessionId = req.query.sessionId as string;
-    const transport = sseTransports.get(sessionId);
+  // Handle stateless RPC request (Shared engine for Vercel Serverless & Direct HTTP POST)
+  const handleRpcRequest = async (jsonRpcReq: any) => {
+    const { jsonrpc, id, method, params } = jsonRpcReq || {};
 
-    if (!transport) {
-      return res.status(404).json({ error: 'Sesión SSE de MCP no encontrada o expirada.' });
+    if (jsonrpc !== '2.0') {
+      return {
+        jsonrpc: '2.0',
+        id: id || null,
+        error: { code: -32600, message: 'Invalid Request: jsonrpc must be "2.0"' },
+      };
     }
 
-    await transport.handlePostMessage(req, res);
-  });
+    if (method === 'initialize') {
+      return {
+        jsonrpc: '2.0',
+        id,
+        result: {
+          protocolVersion: '2024-11-05',
+          capabilities: {
+            tools: {},
+            resources: {},
+            prompts: {},
+          },
+          serverInfo: {
+            name: 'wmp-weekly-report-mcp',
+            version: '1.0.0',
+          },
+        },
+      };
+    }
 
-  // Direct Streamable MCP JSON-RPC 2.0 Endpoint (for HTTP clients)
-  app.post('/api/mcp', async (req: Request, res: Response) => {
-    const body = req.body;
+    if (method === 'notifications/initialized') {
+      return null; // Notification, no response required
+    }
 
-    // Handle single RPC or batch
-    const handleRpcRequest = async (jsonRpcReq: any) => {
-      const { jsonrpc, id, method, params } = jsonRpcReq || {};
+    if (method === 'ping') {
+      return { jsonrpc: '2.0', id, result: {} };
+    }
 
-      if (jsonrpc !== '2.0') {
-        return {
-          jsonrpc: '2.0',
-          id: id || null,
-          error: { code: -32600, message: 'Invalid Request: jsonrpc must be "2.0"' },
-        };
-      }
+    if (method === 'tools/list') {
+      return {
+        jsonrpc: '2.0',
+        id,
+        result: {
+          tools: [
+            {
+              name: 'get_full_report',
+              description: 'Obtiene el reporte semanal completo de WMP.',
+              inputSchema: { type: 'object', properties: {} },
+            },
+            {
+              name: 'get_report_summary',
+              description: 'Obtiene el resumen con métricas clave de estatus.',
+              inputSchema: { type: 'object', properties: {} },
+            },
+            {
+              name: 'download_pdf_report',
+              description:
+                'Genera el archivo PDF oficial del reporte semanal de WMP Mexico Advisors. Retorna el enlace de descarga directa y el archivo en Base64.',
+              inputSchema: { type: 'object', properties: {} },
+            },
+            {
+              name: 'add_activity',
+              description: 'Agrega una actividad a una cuenta dada.',
+              inputSchema: {
+                type: 'object',
+                properties: {
+                  accountIdentifier: { type: 'string' },
+                  topic: { type: 'string' },
+                  status: {
+                    type: 'string',
+                    enum: ['Pendiente', 'En proceso', 'Bloqueado', 'Completado'],
+                  },
+                  update: { type: 'string' },
+                },
+                required: ['accountIdentifier', 'topic'],
+              },
+            },
+            {
+              name: 'update_activity',
+              description: 'Actualiza una actividad existente.',
+              inputSchema: {
+                type: 'object',
+                properties: {
+                  accountIdentifier: { type: 'string' },
+                  activityId: { type: 'string' },
+                  topic: { type: 'string' },
+                  status: {
+                    type: 'string',
+                    enum: ['Pendiente', 'En proceso', 'Bloqueado', 'Completado'],
+                  },
+                  update: { type: 'string' },
+                },
+                required: ['accountIdentifier', 'activityId'],
+              },
+            },
+            {
+              name: 'delete_activity',
+              description: 'Elimina una actividad de una cuenta por ID.',
+              inputSchema: {
+                type: 'object',
+                properties: {
+                  accountIdentifier: { type: 'string' },
+                  activityId: { type: 'string' },
+                },
+                required: ['accountIdentifier', 'activityId'],
+              },
+            },
+            {
+              name: 'update_metadata',
+              description: 'Actualiza los metadatos generales del reporte.',
+              inputSchema: {
+                type: 'object',
+                properties: {
+                  week: { type: 'string' },
+                  cutoffDate: { type: 'string' },
+                  responsible: { type: 'string' },
+                  department: { type: 'string' },
+                  phone: { type: 'string' },
+                  email: { type: 'string' },
+                },
+              },
+            },
+            {
+              name: 'load_sample_data',
+              description: 'Carga datos de muestra realistas.',
+              inputSchema: { type: 'object', properties: {} },
+            },
+            {
+              name: 'clear_report',
+              description: 'Limpia todas las actividades.',
+              inputSchema: { type: 'object', properties: {} },
+            },
+          ],
+        },
+      };
+    }
 
-      if (method === 'initialize') {
+    if (method === 'tools/call') {
+      const { name, arguments: args = {} } = params || {};
+
+      if (name === 'get_full_report') {
         return {
           jsonrpc: '2.0',
           id,
           result: {
-            protocolVersion: '2024-11-05',
-            capabilities: {
-              tools: {},
-              resources: {},
-              prompts: {},
-            },
-            serverInfo: {
-              name: 'wmp-weekly-report-mcp',
-              version: '1.0.0',
-            },
+            content: [{ type: 'text', text: JSON.stringify(reportStore.getReport(), null, 2) }],
           },
         };
       }
 
-      if (method === 'notifications/initialized') {
-        return null; // Notification, no response required
-      }
-
-      if (method === 'ping') {
-        return { jsonrpc: '2.0', id, result: {} };
-      }
-
-      if (method === 'tools/list') {
+      if (name === 'get_report_summary') {
         return {
           jsonrpc: '2.0',
           id,
           result: {
-            tools: [
+            content: [{ type: 'text', text: JSON.stringify(reportStore.getSummaryStats(), null, 2) }],
+          },
+        };
+      }
+
+      if (name === 'download_pdf_report') {
+        const report = reportStore.getReport();
+        const pdfBuffer = generateServerPdf();
+        const base64Pdf = pdfBuffer.toString('base64');
+        const weekClean = (report.metadata.week || 'Semana').replace(/[^a-zA-Z0-9]/g, '_');
+        const dateClean = (report.metadata.cutoffDate || '2026').replace(/[^a-zA-Z0-9-]/g, '_');
+        const filename = `Reporte_Semanal_WMP_${weekClean}_${dateClean}.pdf`;
+
+        return {
+          jsonrpc: '2.0',
+          id,
+          result: {
+            content: [
               {
-                name: 'get_full_report',
-                description: 'Obtiene el reporte semanal completo de WMP.',
-                inputSchema: { type: 'object', properties: {} },
+                type: 'text',
+                text: `✅ **Reporte Semanal generado exitosamente en PDF**\n\n📄 **Archivo:** \`${filename}\`\n👤 **Responsable:** ${report.metadata.responsible}\n📅 **Fecha de Corte:** ${report.metadata.cutoffDate}\n\n🔗 **Enlace de Descarga Directa:**\n[📥 Descargar ${filename}](/api/report/pdf)\n\n*El PDF incluye el formato oficial WMP Mexico Advisors.*`,
               },
               {
-                name: 'get_report_summary',
-                description: 'Obtiene el resumen con métricas clave de estatus.',
-                inputSchema: { type: 'object', properties: {} },
-              },
-              {
-                name: 'add_activity',
-                description: 'Agrega una actividad a una cuenta dada.',
-                inputSchema: {
-                  type: 'object',
-                  properties: {
-                    accountIdentifier: { type: 'string' },
-                    topic: { type: 'string' },
-                    status: {
-                      type: 'string',
-                      enum: ['Pendiente', 'En proceso', 'Bloqueado', 'Completado'],
-                    },
-                    update: { type: 'string' },
-                  },
-                  required: ['accountIdentifier', 'topic'],
+                type: 'resource',
+                resource: {
+                  uri: `report://pdf/${filename}`,
+                  mimeType: 'application/pdf',
+                  blob: base64Pdf,
                 },
-              },
-              {
-                name: 'update_activity',
-                description: 'Actualiza una actividad existente.',
-                inputSchema: {
-                  type: 'object',
-                  properties: {
-                    accountIdentifier: { type: 'string' },
-                    activityId: { type: 'string' },
-                    topic: { type: 'string' },
-                    status: {
-                      type: 'string',
-                      enum: ['Pendiente', 'En proceso', 'Bloqueado', 'Completado'],
-                    },
-                    update: { type: 'string' },
-                  },
-                  required: ['accountIdentifier', 'activityId'],
-                },
-              },
-              {
-                name: 'delete_activity',
-                description: 'Elimina una actividad de una cuenta por ID.',
-                inputSchema: {
-                  type: 'object',
-                  properties: {
-                    accountIdentifier: { type: 'string' },
-                    activityId: { type: 'string' },
-                  },
-                  required: ['accountIdentifier', 'activityId'],
-                },
-              },
-              {
-                name: 'update_metadata',
-                description: 'Actualiza los metadatos generales del reporte.',
-                inputSchema: {
-                  type: 'object',
-                  properties: {
-                    week: { type: 'string' },
-                    cutoffDate: { type: 'string' },
-                    responsible: { type: 'string' },
-                    department: { type: 'string' },
-                    phone: { type: 'string' },
-                    email: { type: 'string' },
-                  },
-                },
-              },
-              {
-                name: 'load_sample_data',
-                description: 'Carga datos de muestra realistas.',
-                inputSchema: { type: 'object', properties: {} },
-              },
-              {
-                name: 'clear_report',
-                description: 'Limpia todas las actividades.',
-                inputSchema: { type: 'object', properties: {} },
               },
             ],
           },
         };
       }
 
-      if (method === 'tools/call') {
-        const { name, arguments: args = {} } = params || {};
-
-        if (name === 'get_full_report') {
-          return {
-            jsonrpc: '2.0',
-            id,
-            result: {
-              content: [{ type: 'text', text: JSON.stringify(reportStore.getReport(), null, 2) }],
-            },
-          };
-        }
-
-        if (name === 'get_report_summary') {
-          return {
-            jsonrpc: '2.0',
-            id,
-            result: {
-              content: [{ type: 'text', text: JSON.stringify(reportStore.getSummaryStats(), null, 2) }],
-            },
-          };
-        }
-
-        if (name === 'add_activity') {
-          const res = reportStore.addActivity(
-            args.accountIdentifier,
-            args.topic,
-            args.status,
-            args.update
-          );
-          return {
-            jsonrpc: '2.0',
-            id,
-            result: {
-              content: [{ type: 'text', text: JSON.stringify(res, null, 2) }],
-              isError: !res.success,
-            },
-          };
-        }
-
-        if (name === 'update_activity') {
-          const res = reportStore.updateActivity(args.accountIdentifier, args.activityId, {
-            topic: args.topic,
-            status: args.status,
-            update: args.update,
-          });
-          return {
-            jsonrpc: '2.0',
-            id,
-            result: {
-              content: [{ type: 'text', text: JSON.stringify(res, null, 2) }],
-              isError: !res.success,
-            },
-          };
-        }
-
-        if (name === 'delete_activity') {
-          const res = reportStore.deleteActivity(args.accountIdentifier, args.activityId);
-          return {
-            jsonrpc: '2.0',
-            id,
-            result: {
-              content: [{ type: 'text', text: JSON.stringify(res, null, 2) }],
-              isError: !res.success,
-            },
-          };
-        }
-
-        if (name === 'update_metadata') {
-          const updated = reportStore.updateMetadata(args);
-          return {
-            jsonrpc: '2.0',
-            id,
-            result: {
-              content: [
-                {
-                  type: 'text',
-                  text: `Metadatos actualizados:\n${JSON.stringify(updated, null, 2)}`,
-                },
-              ],
-            },
-          };
-        }
-
-        if (name === 'load_sample_data') {
-          const rep = reportStore.loadSampleData();
-          return {
-            jsonrpc: '2.0',
-            id,
-            result: {
-              content: [
-                {
-                  type: 'text',
-                  text: 'Se han cargado los datos de ejemplo corporativos en el reporte.',
-                },
-              ],
-            },
-          };
-        }
-
-        if (name === 'clear_report') {
-          reportStore.clearReport();
-          return {
-            jsonrpc: '2.0',
-            id,
-            result: {
-              content: [{ type: 'text', text: 'Se han eliminado todas las actividades.' }],
-            },
-          };
-        }
-
+      if (name === 'add_activity') {
+        const res = reportStore.addActivity(
+          args.accountIdentifier,
+          args.topic,
+          args.status,
+          args.update
+        );
         return {
           jsonrpc: '2.0',
           id,
-          error: { code: -32601, message: `Tool not found: ${name}` },
+          result: {
+            content: [{ type: 'text', text: JSON.stringify(res, null, 2) }],
+            isError: !res.success,
+          },
+        };
+      }
+
+      if (name === 'update_activity') {
+        const res = reportStore.updateActivity(args.accountIdentifier, args.activityId, {
+          topic: args.topic,
+          status: args.status,
+          update: args.update,
+        });
+        return {
+          jsonrpc: '2.0',
+          id,
+          result: {
+            content: [{ type: 'text', text: JSON.stringify(res, null, 2) }],
+            isError: !res.success,
+          },
+        };
+      }
+
+      if (name === 'delete_activity') {
+        const res = reportStore.deleteActivity(args.accountIdentifier, args.activityId);
+        return {
+          jsonrpc: '2.0',
+          id,
+          result: {
+            content: [{ type: 'text', text: JSON.stringify(res, null, 2) }],
+            isError: !res.success,
+          },
+        };
+      }
+
+      if (name === 'update_metadata') {
+        const updated = reportStore.updateMetadata(args);
+        return {
+          jsonrpc: '2.0',
+          id,
+          result: {
+            content: [
+              {
+                type: 'text',
+                text: `Metadatos actualizados:\n${JSON.stringify(updated, null, 2)}`,
+              },
+            ],
+          },
+        };
+      }
+
+      if (name === 'load_sample_data') {
+        const rep = reportStore.loadSampleData();
+        return {
+          jsonrpc: '2.0',
+          id,
+          result: {
+            content: [
+              {
+                type: 'text',
+                text: 'Se han cargado los datos de ejemplo corporativos en el reporte.',
+              },
+            ],
+          },
+        };
+      }
+
+      if (name === 'clear_report') {
+        reportStore.clearReport();
+        return {
+          jsonrpc: '2.0',
+          id,
+          result: {
+            content: [{ type: 'text', text: 'Se han eliminado todas las actividades.' }],
+          },
         };
       }
 
       return {
         jsonrpc: '2.0',
         id,
-        error: { code: -32601, message: `Method not found: ${method}` },
+        error: { code: -32601, message: `Tool not found: ${name}` },
       };
-    };
+    }
 
-    if (Array.isArray(body)) {
-      const results = await Promise.all(body.map(handleRpcRequest));
-      res.json(results.filter(Boolean));
+    return {
+      jsonrpc: '2.0',
+      id,
+      error: { code: -32601, message: `Method not found: ${method}` },
+    };
+  };
+
+  // MCP SSE Message POST Endpoint
+  app.post('/api/mcp/message', async (req: Request, res: Response) => {
+    const sessionId = req.query.sessionId as string;
+    const transport = sessionId ? sseTransports.get(sessionId) : undefined;
+
+    if (transport) {
+      try {
+        await transport.handlePostMessage(req, res);
+        return;
+      } catch (err) {
+        console.warn('[MCP] Transport handlePostMessage failed, falling back to stateless handler:', err);
+      }
+    }
+
+    // Fallback for Vercel Serverless (stateless across lambda invocations)
+    const body = req.body;
+    const response = Array.isArray(body)
+      ? await Promise.all(body.map((b) => handleRpcRequest(b)))
+      : await handleRpcRequest(body);
+
+    if (response) {
+      return res.json(response);
     } else {
-      const result = await handleRpcRequest(body);
-      if (result) res.json(result);
-      else res.status(204).end();
+      return res.status(202).end();
+    }
+  });
+
+  // Direct Streamable MCP JSON-RPC 2.0 Endpoint (for HTTP clients)
+  app.post('/api/mcp', async (req: Request, res: Response) => {
+    const body = req.body;
+    const response = Array.isArray(body)
+      ? await Promise.all(body.map((b) => handleRpcRequest(b)))
+      : await handleRpcRequest(body);
+
+    if (response) {
+      return res.json(response);
+    } else {
+      return res.status(202).end();
     }
   });
 
