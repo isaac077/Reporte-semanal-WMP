@@ -1,10 +1,11 @@
 import React from 'react';
-import { FileText, Sparkles, Download, Eye } from 'lucide-react';
+import { FileText, Sparkles, Download, Eye, Bot } from 'lucide-react';
 import { WmpLogo } from './WmpLogo';
 
 interface HeaderProps {
   onLoadSampleData: () => void;
   onGeneratePdf: () => void;
+  onOpenMcpModal: () => void;
   activeView: 'edit' | 'preview';
   setActiveView: (view: 'edit' | 'preview') => void;
   isGeneratingPdf: boolean;
@@ -13,6 +14,7 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   onLoadSampleData,
   onGeneratePdf,
+  onOpenMcpModal,
   activeView,
   setActiveView,
   isGeneratingPdf,
@@ -34,6 +36,14 @@ export const Header: React.FC<HeaderProps> = ({
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 text-[#0F3D64] border border-sky-200/80">
                   Sistema de Reportes
                 </span>
+                <button
+                  onClick={onOpenMcpModal}
+                  type="button"
+                  className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 transition-colors cursor-pointer"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1 animate-pulse" />
+                  Agente MCP
+                </button>
               </div>
               <h1 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
                 Reporte Semanal de Estatus
@@ -44,6 +54,17 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Botones de Acción */}
           <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
             
+            {/* Botón ChatGPT / MCP */}
+            <button
+              onClick={onOpenMcpModal}
+              type="button"
+              className="inline-flex items-center px-3 py-1.5 text-xs font-bold rounded-lg text-indigo-950 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-colors cursor-pointer"
+              title="Abrir configuración y enlaces de conexión para ChatGPT y Servidor MCP"
+            >
+              <Bot className="w-3.5 h-3.5 mr-1.5 text-indigo-600" />
+              <span>Control ChatGPT / MCP</span>
+            </button>
+
             {/* Cargar Datos de Ejemplo */}
             <button
               onClick={onLoadSampleData}

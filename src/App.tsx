@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { FIXED_ACCOUNTS } from './config/accounts';
 import { AccountReport, ActivityItem, FullReportData, GeneralMetadata } from './types/report';
 import { SAMPLE_REPORT_DATA } from './data/sampleReport';
@@ -12,6 +12,7 @@ import { AccountActivitiesTable } from './components/AccountActivitiesTable';
 import { ReportPreview } from './components/ReportPreview';
 import { Toast, ToastMessage } from './components/Toast';
 import { WmpLogo } from './components/WmpLogo';
+import { McpStatusModal } from './components/McpStatusModal';
 
 import {
   FileText,
@@ -19,6 +20,9 @@ import {
   CheckCircle2,
   RotateCcw,
   Download,
+  Bot,
+  Sparkles,
+  RefreshCw,
 } from 'lucide-react';
 
 const STORAGE_KEY = 'wmp_weekly_report_draft_v1';
@@ -45,7 +49,7 @@ const createDefaultReportData = (): FullReportData => {
 };
 
 export default function App() {
-  // Cargar borrador inicial desde localStorage
+  // Cargar borrador inicial desde localStorage o servidor
   const [reportData, setReportData] = useState<FullReportData>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -89,17 +93,54 @@ export default function App() {
   // Estados de generación
   const [isGeneratingPdf, setIsGeneratingPdf] = useState<boolean>(false);
 
+  // Modal MCP Status
+  const [isMcpModalOpen, setIsMcpModalOpen] = useState<boolean>(false);
+
   // Notificaciones Toast
   const [toast, setToast] = useState<ToastMessage | null>(null);
 
-  // Guardar en localStorage ante cambios
+  // Sincronizar desde el Servidor (MCP o Backend)
+  const syncWithServer = useCallback(async () => {
+    try {
+      const res = await fetch('/api/report');
+      if (res.ok) {
+        const serverReport = await res.json();
+        if (serverReport && serverReport.metadata && Array.isArray(serverReport.accounts)) {
+          setReportData(serverReport);
+        }
+      }
+    } catch (e) {
+      console.warn('Servidor backend offline o no disponible:', e);
+    }
+  }, []);
+
+  // Sync al montar la app
+  useEffect(() => {
+    syncWithServer();
+  }, [syncWithServer]);
+
+  // Enviar cambios locales al backend
+  const pushToServer = useCallback(async (dataToPush: FullReportData) => {
+    try {
+      await fetch('/api/report', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dataToPush),
+      });
+    } catch (e) {
+      console.warn('Error syncing with backend server:', e);
+    }
+  }, []);
+
+  // Guardar en localStorage y servidor ante cambios
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(reportData));
+      pushToServer(reportData);
     } catch (e) {
       console.warn('Error al guardar en localStorage:', e);
     }
-  }, [reportData]);
+  }, [reportData, pushToServer]);
 
   // Actualizar metadatos
   const handleMetadataChange = (updatedMetadata: GeneralMetadata) => {
@@ -123,8 +164,9 @@ export default function App() {
   };
 
   // Cargar datos de ejemplo realistas
-  const handleLoadSampleData = () => {
+  const handleLoadSampleData = async () => {
     setReportData(SAMPLE_REPORT_DATA);
+    await pushToServer(SAMPLE_REPORT_DATA);
     setToast({
       id: Date.now().toString(),
       type: 'info',
@@ -134,10 +176,12 @@ export default function App() {
   };
 
   // Resetear el reporte
-  const handleResetForm = () => {
+  const handleResetForm = async () => {
     if (window.confirm('¿Está seguro de que desea limpiar todos los campos del reporte?')) {
-      setReportData(createDefaultReportData());
+      const empty = createDefaultReportData();
+      setReportData(empty);
       localStorage.removeItem(STORAGE_KEY);
+      await pushToServer(empty);
       setToast({
         id: Date.now().toString(),
         type: 'info',
@@ -262,6 +306,7 @@ export default function App() {
       <Header
         onLoadSampleData={handleLoadSampleData}
         onGeneratePdf={handleGeneratePdf}
+        onOpenMcpModal={() => setIsMcpModalOpen(true)}
         activeView={activeView}
         setActiveView={setActiveView}
         isGeneratingPdf={isGeneratingPdf}
@@ -271,7 +316,7 @@ export default function App() {
       <main className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1">
         
         {/* Banner Informativo y Resumen de Avance */}
-        <div className="bg-gradient-to-r from-[#0F3D64] via-[#0B4F82] to-[#1E40AF] rounded-2xl p-4 sm:p-5 text-white shadow-lg shadow-[#0F3D64]/10 mb-6">
+        <div className="bg-gradient-to-r from-[#0F3D64] via-[#0B4F82] to-[#1E40AF] rounded-2xl p-4 sm:p-5 text-white shadow-lg shadow-[#0F3D64]/10 mb-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center space-x-2">
@@ -312,6 +357,39 @@ export default function App() {
                 <span className="block text-[10px] text-rose-200 font-semibold uppercase">Bloqueados</span>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Callout de Agente ChatGPT / MCP */}
+        <div className="bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 rounded-xl p-3 px-4 text-white shadow-xs border border-indigo-800/50 mb-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center space-x-3">
+            <div className="p-1.5 bg-indigo-500/20 border border-indigo-400/30 rounded-lg text-indigo-300 shrink-0">
+              <Bot className="w-4 h-4" />
+            </div>
+            <div className="text-xs">
+              <span className="font-bold text-white mr-1.5">Control Inteligente con ChatGPT:</span>
+              <span className="text-slate-300">
+                Este sistema incluye un servidor MCP y OpenAPI para agregar o modificar actividades con voz o texto en ChatGPT.
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-2 shrink-0">
+            <button
+              onClick={syncWithServer}
+              type="button"
+              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 transition-colors cursor-pointer"
+              title="Sincronizar cambios recientes de ChatGPT"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={() => setIsMcpModalOpen(true)}
+              type="button"
+              className="px-3 py-1 bg-indigo-500 hover:bg-indigo-600 text-white font-bold text-xs rounded-lg shadow-2xs transition-colors cursor-pointer"
+            >
+              Conectar ChatGPT
+            </button>
           </div>
         </div>
 
@@ -423,6 +501,13 @@ export default function App() {
 
       {/* Componente de Notificaciones Toast */}
       <Toast toast={toast} onDismiss={() => setToast(null)} />
+
+      {/* Modal de Estado y Configuración MCP / ChatGPT */}
+      <McpStatusModal
+        isOpen={isMcpModalOpen}
+        onClose={() => setIsMcpModalOpen(false)}
+        onRefreshLocalState={syncWithServer}
+      />
     </div>
   );
 }

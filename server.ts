@@ -1,6 +1,7 @@
 import express from 'express';
 import path from 'path';
 import { createServer as createViteServer } from 'vite';
+import { setupApiRoutes } from './src/server/routes';
 
 const app = express();
 const PORT = 3000;
@@ -9,8 +10,11 @@ app.use(express.json({ limit: '25mb' }));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', service: 'WMP Reportes Semanales' });
+  res.json({ status: 'ok', service: 'WMP Reportes Semanales', mcp: 'enabled' });
 });
+
+// Setup MCP and REST API routes
+setupApiRoutes(app);
 
 async function startServer() {
   if (process.env.NODE_ENV !== 'production') {
