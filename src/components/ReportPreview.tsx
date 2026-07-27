@@ -18,20 +18,23 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
         className="bg-white text-slate-800 w-[794px] min-h-[1027px] p-[38px] shadow-2xl rounded-none relative flex flex-col justify-between font-sans box-border"
         style={{
           fontFamily: 'Arial, Helvetica, sans-serif',
+          backgroundColor: '#ffffff',
+          color: '#1e293b',
+          boxSizing: 'border-box',
         }}
       >
         {/* ENCABEZADO SUPERIOR PDF */}
         <div id="pdf-general-info-block">
           {/* Línea roja delgada de acento superior */}
-          <div className="w-full h-[3px] bg-[#B91C1C] mb-4" />
+          <div className="w-full h-[3px] bg-[#B91C1C] mb-4" style={{ backgroundColor: '#B91C1C' }} />
 
           {/* TITULO Y LOGO OFICIAL */}
           <div className="flex justify-between items-start mb-6">
             <div>
-              <h1 className="text-[22px] font-black text-[#B91C1C] tracking-tight uppercase leading-tight mb-0.5">
+              <h1 className="text-[22px] font-black text-[#B91C1C] tracking-tight uppercase leading-tight mb-0.5" style={{ color: '#B91C1C' }}>
                 REPORTE SEMANAL DE ESTATUS
               </h1>
-              <p className="text-[12px] text-[#64748B] font-medium">
+              <p className="text-[12px] text-[#64748B] font-medium" style={{ color: '#64748B' }}>
                 Thomas Wagner.MX • Business Development Agency
               </p>
             </div>
@@ -41,45 +44,45 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
           </div>
 
           {/* TABLA DE INFORMACION GENERAL */}
-          <div className="mb-6 border border-[#CBD5E1] rounded-none overflow-hidden">
-            <table className="w-full border-collapse text-left">
+          <div className="mb-6 border border-[#CBD5E1] rounded-none overflow-hidden" style={{ borderColor: '#CBD5E1' }}>
+            <table className="w-full border-collapse text-left" style={{ borderCollapse: 'collapse', width: '100%' }}>
               <thead>
-                <tr className="bg-[#F8FAFC] text-[#B91C1C] text-[10px] font-bold uppercase tracking-wider border-b border-[#CBD5E1]">
-                  <th className="py-2 px-3 border-r border-[#CBD5E1] w-[20%]">SEMANA</th>
-                  <th className="py-2 px-3 border-r border-[#CBD5E1] w-[30%]">FECHA DE CORTE</th>
+                <tr className="bg-[#F8FAFC] text-[#B91C1C] text-[10px] font-bold uppercase tracking-wider border-b border-[#CBD5E1]" style={{ backgroundColor: '#F8FAFC', color: '#B91C1C', borderBottom: '1px solid #CBD5E1' }}>
+                  <th className="py-2 px-3 border-r border-[#CBD5E1] w-[20%]" style={{ borderRight: '1px solid #CBD5E1' }}>SEMANA</th>
+                  <th className="py-2 px-3 border-r border-[#CBD5E1] w-[30%]" style={{ borderRight: '1px solid #CBD5E1' }}>FECHA DE CORTE</th>
                   <th className="py-2 px-3 w-[50%]">RESPONSABLE</th>
                 </tr>
               </thead>
               <tbody>
-                <tr className="text-[11px] text-[#1E293B] bg-[#FFFFFF] border-b border-[#CBD5E1]">
-                  <td className="py-2 px-3 border-r border-[#CBD5E1] font-medium">
-                    {metadata.week || <span className="text-[#94A3B8] italic">Escribe aquí</span>}
+                <tr className="text-[11px] text-[#1E293B] bg-[#FFFFFF] border-b border-[#CBD5E1]" style={{ backgroundColor: '#FFFFFF', color: '#1E293B', borderBottom: '1px solid #CBD5E1' }}>
+                  <td className="py-2 px-3 border-r border-[#CBD5E1] font-medium" style={{ borderRight: '1px solid #CBD5E1' }}>
+                    {metadata.week || <span className="text-[#94A3B8] italic" style={{ color: '#94A3B8' }}>Escribe aquí</span>}
                   </td>
-                  <td className="py-2 px-3 border-r border-[#CBD5E1] font-medium">
-                    {formatDateDisplay(metadata.cutoffDate) || <span className="text-[#94A3B8] italic">dd/mm/aaaa</span>}
+                  <td className="py-2 px-3 border-r border-[#CBD5E1] font-medium" style={{ borderRight: '1px solid #CBD5E1' }}>
+                    {formatDateDisplay(metadata.cutoffDate) || <span className="text-[#94A3B8] italic" style={{ color: '#94A3B8' }}>dd/mm/aaaa</span>}
                   </td>
                   <td className="py-2 px-3 font-medium">
-                    {metadata.responsible || <span className="text-[#94A3B8] italic">Nombre</span>}
+                    {metadata.responsible || <span className="text-[#94A3B8] italic" style={{ color: '#94A3B8' }}>Nombre</span>}
                   </td>
                 </tr>
               </tbody>
               <thead>
-                <tr className="bg-[#F8FAFC] text-[#B91C1C] text-[10px] font-bold uppercase tracking-wider border-b border-[#CBD5E1]">
-                  <th className="py-2 px-3 border-r border-[#CBD5E1] w-[35%]">ÁREA / PUESTO</th>
-                  <th className="py-2 px-3 border-r border-[#CBD5E1] w-[30%]">TELÉFONO</th>
+                <tr className="bg-[#F8FAFC] text-[#B91C1C] text-[10px] font-bold uppercase tracking-wider border-b border-[#CBD5E1]" style={{ backgroundColor: '#F8FAFC', color: '#B91C1C', borderBottom: '1px solid #CBD5E1' }}>
+                  <th className="py-2 px-3 border-r border-[#CBD5E1] w-[35%]" style={{ borderRight: '1px solid #CBD5E1' }}>ÁREA / PUESTO</th>
+                  <th className="py-2 px-3 border-r border-[#CBD5E1] w-[30%]" style={{ borderRight: '1px solid #CBD5E1' }}>TELÉFONO</th>
                   <th className="py-2 px-3 w-[35%]">CORREO ELECTRÓNICO</th>
                 </tr>
               </thead>
               <tbody>
-                <tr className="text-[11px] text-[#1E293B] bg-[#FFFFFF]">
-                  <td className="py-2 px-3 border-r border-[#CBD5E1] font-medium">
-                    {metadata.department || <span className="text-[#94A3B8] italic">Área o puesto</span>}
+                <tr className="text-[11px] text-[#1E293B] bg-[#FFFFFF]" style={{ backgroundColor: '#FFFFFF', color: '#1E293B' }}>
+                  <td className="py-2 px-3 border-r border-[#CBD5E1] font-medium" style={{ borderRight: '1px solid #CBD5E1' }}>
+                    {metadata.department || <span className="text-[#94A3B8] italic" style={{ color: '#94A3B8' }}>Área o puesto</span>}
                   </td>
-                  <td className="py-2 px-3 border-r border-[#CBD5E1] font-medium">
-                    {metadata.phone || <span className="text-[#94A3B8] italic">Teléfono</span>}
+                  <td className="py-2 px-3 border-r border-[#CBD5E1] font-medium" style={{ borderRight: '1px solid #CBD5E1' }}>
+                    {metadata.phone || <span className="text-[#94A3B8] italic" style={{ color: '#94A3B8' }}>Teléfono</span>}
                   </td>
                   <td className="py-2 px-3 font-medium">
-                    {metadata.email || <span className="text-[#94A3B8] italic">Correo</span>}
+                    {metadata.email || <span className="text-[#94A3B8] italic" style={{ color: '#94A3B8' }}>Correo</span>}
                   </td>
                 </tr>
               </tbody>
@@ -93,19 +96,19 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
             const hasActivities = acc.activities.length > 0;
 
             return (
-              <div key={acc.accountId} className="pdf-account-card border border-[#CBD5E1] rounded-none overflow-hidden">
+              <div key={acc.accountId} className="pdf-account-card border border-[#CBD5E1] rounded-none overflow-hidden" style={{ border: '1px solid #CBD5E1' }}>
                 {/* Encabezado Nombre de la Cuenta */}
-                <div className="bg-[#F8FAFC] border-b border-[#CBD5E1] px-3 py-1.5 flex items-center justify-between">
-                  <h2 className="text-[13px] font-bold text-[#B91C1C]">
+                <div className="bg-[#F8FAFC] border-b border-[#CBD5E1] px-3 py-1.5 flex items-center justify-between" style={{ backgroundColor: '#F8FAFC', borderBottom: '1px solid #CBD5E1' }}>
+                  <h2 className="text-[13px] font-bold text-[#B91C1C]" style={{ color: '#B91C1C' }}>
                     {acc.accountName}
                   </h2>
                 </div>
 
                 {/* Tabla de Actividades */}
-                <table className="w-full border-collapse text-left">
+                <table className="w-full border-collapse text-left" style={{ borderCollapse: 'collapse', width: '100%' }}>
                   <thead>
-                    <tr className="bg-[#B91C1C] text-white text-[10px] font-bold uppercase tracking-wider">
-                      <th className="py-1.5 px-3 border-r border-[#991B1B] w-[38%]">
+                    <tr className="bg-[#B91C1C] text-white text-[10px] font-bold uppercase tracking-wider" style={{ backgroundColor: '#B91C1C', color: '#FFFFFF' }}>
+                      <th className="py-1.5 px-3 border-r border-[#991B1B] w-[38%]" style={{ borderRight: '1px solid #991B1B' }}>
                         TEMA / PROYECTO
                       </th>
                       <th className="py-1.5 px-3 w-[62%]">
@@ -115,8 +118,8 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
                   </thead>
                   <tbody className="divide-y divide-[#CBD5E1]">
                     {!hasActivities ? (
-                      <tr className="text-[11px] text-[#64748B] italic bg-[#FFFFFF]">
-                        <td className="py-2 px-3 border-r border-[#CBD5E1]">
+                      <tr className="text-[11px] text-[#64748B] italic bg-[#FFFFFF]" style={{ backgroundColor: '#FFFFFF', color: '#64748B' }}>
+                        <td className="py-2 px-3 border-r border-[#CBD5E1]" style={{ borderRight: '1px solid #CBD5E1' }}>
                           Escribe el tema o proyecto
                         </td>
                         <td className="py-2 px-3">
@@ -128,10 +131,10 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
                         const badge = getStatusBadgeConfig(act.status);
 
                         return (
-                          <tr key={act.id} className="text-[11px] text-[#1E293B] bg-[#FFFFFF] align-top">
+                          <tr key={act.id} className="text-[11px] text-[#1E293B] bg-[#FFFFFF] align-top" style={{ backgroundColor: '#FFFFFF', color: '#1E293B', borderBottom: '1px solid #CBD5E1' }}>
                             {/* TEMA */}
-                            <td className="py-2.5 px-3 border-r border-[#CBD5E1] font-semibold text-[#1E293B]">
-                              {act.topic || <span className="text-[#94A3B8] font-normal italic">Escribe el tema o proyecto</span>}
+                            <td className="py-2.5 px-3 border-r border-[#CBD5E1] font-semibold text-[#1E293B]" style={{ borderRight: '1px solid #CBD5E1', color: '#1E293B' }}>
+                              {act.topic || <span className="text-[#94A3B8] font-normal italic" style={{ color: '#94A3B8' }}>Escribe el tema o proyecto</span>}
                             </td>
 
                             {/* ESTATUS Y ACTUALIZACION */}
@@ -170,8 +173,8 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
                                 </div>
 
                                 {/* Texto de Actualización */}
-                                <p className="text-[11px] text-[#334155] leading-relaxed whitespace-pre-wrap">
-                                  {act.update || <span className="text-[#94A3B8] italic">Avance, pendiente, bloqueo o siguiente paso</span>}
+                                <p className="text-[11px] text-[#334155] leading-relaxed whitespace-pre-wrap" style={{ color: '#334155' }}>
+                                  {act.update || <span className="text-[#94A3B8] italic" style={{ color: '#94A3B8' }}>Avance, pendiente, bloqueo o siguiente paso</span>}
                                 </p>
                               </div>
                             </td>
@@ -187,39 +190,39 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
         </div>
 
         {/* PIE DE PÁGINA CORPORATIVO THOMAS WAGNER.MX */}
-        <div id="pdf-corporate-footer" className="mt-10 pt-4 border-t border-[#CBD5E1] text-[#334155]">
-          <div className="grid grid-cols-12 gap-3 items-center text-[9px] leading-snug">
+        <div id="pdf-corporate-footer" className="mt-10 pt-4 border-t border-[#CBD5E1] text-[#334155]" style={{ borderTop: '1px solid #CBD5E1', color: '#334155', width: '100%', boxSizing: 'border-box' }}>
+          <div className="flex flex-row justify-between items-center text-[9px] leading-snug" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
             
             {/* Columna Izquierda: Dirección Fiscal & Contacto */}
-            <div className="col-span-5 font-medium">
-              <strong className="block text-[#B91C1C] font-bold text-[10px] mb-0.5">
+            <div className="font-medium" style={{ width: '42%', boxSizing: 'border-box' }}>
+              <strong className="block text-[#B91C1C] font-bold text-[10px] mb-0.5" style={{ color: '#B91C1C', display: 'block' }}>
                 Thomas Wagner.MX
               </strong>
-              <p className="text-[#475569]">
+              <p className="text-[#475569]" style={{ color: '#475569', margin: 0 }}>
                 Level Tower B - 2. Floor Avenida Antea 1130<br />
                 76127 Jurica, Querétaro, México<br />
-                <span className="font-semibold text-[#B91C1C]">T: +52 442 181 7209 | +49 174 470 9939</span>
+                <span className="font-semibold text-[#B91C1C]" style={{ color: '#B91C1C' }}>T: +52 442 181 7209 | +49 174 470 9939</span>
               </p>
             </div>
 
             {/* Columna Centro: Logo Corporativo Thomas Wagner */}
-            <div className="col-span-4 text-center flex flex-col items-center justify-center border-x border-[#E2E8F0] px-2 py-1">
+            <div className="text-center flex flex-col items-center justify-center border-x border-[#E2E8F0] px-2 py-1" style={{ width: '32%', borderLeft: '1px solid #E2E8F0', borderRight: '1px solid #E2E8F0', display: 'flex', flexDirection: 'col', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box' }}>
               <WmpLogo size="lg" />
-              <span className="text-[7.5px] text-[#64748B] font-bold uppercase tracking-wider block mt-1">
+              <span className="text-[7.5px] text-[#64748B] font-bold uppercase tracking-wider block mt-1" style={{ color: '#64748B', display: 'block' }}>
                 Business Development Agency
               </span>
             </div>
 
             {/* Columna Derecha: Web & Correo */}
-            <div className="col-span-3 text-right text-[8.5px] text-[#475569] space-y-0.5">
-              <strong className="block text-[#B91C1C]">E: wagner@thomaswagner.mx</strong>
-              <strong className="block text-[#B91C1C]">W: www.thomaswagner.mx</strong>
+            <div className="text-right text-[8.5px] text-[#475569] space-y-0.5" style={{ width: '26%', textAlign: 'right', color: '#475569', boxSizing: 'border-box' }}>
+              <strong className="block text-[#B91C1C]" style={{ color: '#B91C1C', display: 'block' }}>E: wagner@thomaswagner.mx</strong>
+              <strong className="block text-[#B91C1C]" style={{ color: '#B91C1C', display: 'block' }}>W: www.thomaswagner.mx</strong>
             </div>
 
           </div>
 
           {/* Barra inferior sólida en rojo corporativo */}
-          <div className="w-full h-2.5 bg-[#B91C1C] mt-3" />
+          <div className="w-full h-2.5 bg-[#B91C1C] mt-3" style={{ backgroundColor: '#B91C1C', height: '10px', width: '100%' }} />
         </div>
 
       </div>

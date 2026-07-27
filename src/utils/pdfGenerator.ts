@@ -18,6 +18,22 @@ export async function generatePdfFromElement(
     throw new Error(`Elemento de vista previa con ID "${elementId}" no encontrado.`);
   }
 
+  // Esperar a que las fuentes web y las imágenes del elemento estén 100% cargadas y renderizadas
+  if (document.fonts) {
+    await document.fonts.ready;
+  }
+
+  const imgs = Array.from(element.querySelectorAll('img'));
+  await Promise.all(
+    imgs.map((img) => {
+      if (img.complete) return Promise.resolve();
+      return new Promise((resolve) => {
+        img.onload = resolve;
+        img.onerror = resolve;
+      });
+    })
+  );
+
   // Nombre automático del archivo
   const filename = generateReportFilename(cutoffDate, responsible);
 
@@ -29,6 +45,7 @@ export async function generatePdfFromElement(
     logging: false,
     backgroundColor: '#ffffff',
     windowWidth: 800,
+    width: element.offsetWidth || 794,
     onclone: (clonedDoc) => {
       // Helper para convertir oklch(...) a rgb(...) usando el parser nativo del navegador
       const tempDiv = clonedDoc.createElement('div');
@@ -51,7 +68,18 @@ export async function generatePdfFromElement(
         });
       };
 
-      // 1. Limpiar oklch en todas las etiquetas <style> del documento clonado
+      // 1. Inyectar estilos de anulación para garantizar tipografía e impresión limpia
+      const overrideStyle = clonedDoc.createElement('style');
+      overrideStyle.textContent = `
+        * {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+          box-sizing: border-box !important;
+        }
+      `;
+      clonedDoc.head.appendChild(overrideStyle);
+
+      // 2. Limpiar oklch en todas las etiquetas <style> del documento clonado
       const styleElements = Array.from(clonedDoc.querySelectorAll('style'));
       styleElements.forEach((style) => {
         if (style.textContent && style.textContent.includes('oklch')) {
@@ -59,35 +87,36 @@ export async function generatePdfFromElement(
         }
       });
 
-      // 2. Limpiar estilos inline y computed colors en todos los elementos del reporte
+      // 3. Configurar contenedor y dimensiones exactas en el documento clonado
       const pdfContainer = clonedDoc.getElementById(elementId);
+
       if (pdfContainer) {
-        const allNodes = [pdfContainer, ...Array.from(pdfContainer.querySelectorAll('*'))] as HTMLElement[];
-        allNodes.forEach((node) => {
-          if (node.style) {
-            if (node.style.cssText && node.style.cssText.includes('oklch')) {
-              node.style.cssText = resolveOklch(node.style.cssText);
-            }
-            try {
-              const computed =
-                clonedDoc.defaultView?.getComputedStyle(node) ||
-                window.getComputedStyle(node);
-              if (computed) {
-                const colorProps = ['color', 'backgroundColor', 'borderColor', 'borderTopColor', 'borderBottomColor', 'borderLeftColor', 'borderRightColor', 'fill', 'stroke'];
-                colorProps.forEach((prop) => {
-                  const val = computed.getPropertyValue(prop);
-                  if (val && val.includes('oklch')) {
-                    node.style.setProperty(prop, resolveOklch(val));
-                  }
-                });
-              }
-            } catch (e) {
-              // ignore
-            }
+        clonedDoc.body.style.width = '800px';
+        clonedDoc.body.style.minWidth = '800px';
+        clonedDoc.body.style.margin = '0';
+        clonedDoc.body.style.padding = '0';
+        clonedDoc.body.style.backgroundColor = '#ffffff';
+
+        pdfContainer.style.width = '794px';
+        pdfContainer.style.minWidth = '794px';
+        pdfContainer.style.maxWidth = '794px';
+        pdfContainer.style.boxSizing = 'border-box';
+        pdfContainer.style.transform = 'none';
+        pdfContainer.style.backgroundColor = '#ffffff';
+        pdfContainer.style.color = '#1e293b';
+        pdfContainer.style.fontFamily = 'Arial, Helvetica, sans-serif';
+
+        // Enforzar dimensiones fijas en todas las imágenes dentro del contenedor del PDF
+        const pdfImgs = Array.from(pdfContainer.querySelectorAll('img')) as HTMLImageElement[];
+        pdfImgs.forEach((img) => {
+          img.style.objectFit = 'contain';
+          img.style.display = 'block';
+          if (!img.style.height || img.style.height === 'auto') {
+            img.style.maxHeight = '48px';
           }
         });
 
-        // 3. Centrado perfecto de badges de estatus para html2canvas
+        // 4. Centrado perfecto de badges de estatus para html2canvas
         const pdfBadges = Array.from(pdfContainer.querySelectorAll('.pdf-status-badge')) as HTMLElement[];
         pdfBadges.forEach((badgeEl) => {
           badgeEl.style.display = 'inline-block';

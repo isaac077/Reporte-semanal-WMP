@@ -267,13 +267,11 @@ export default function App() {
     setIsGeneratingPdf(true);
 
     try {
-      // Si estamos en modo captura, cambiamos brevemente a modo preview para renderizar el contenedor
-      setActiveView('preview');
+      if (document.fonts) {
+        await document.fonts.ready;
+      }
 
-      // Pequeño delay para asegurar renderizado del DOM en la vista de preview
-      await new Promise((resolve) => setTimeout(resolve, 300));
-
-      const { pdfBlob, pdfBase64, filename } = await generatePdfFromElement(
+      const { pdfBlob, filename } = await generatePdfFromElement(
         'report-pdf-canvas-container',
         reportData.metadata.cutoffDate,
         reportData.metadata.responsible
@@ -428,6 +426,21 @@ export default function App() {
                   Confirmar y Generar PDF
                 </button>
               </div>
+            </div>
+
+            {/* Contenedor offscreen para que el canvas de PDF siempre esté montado y listo */}
+            <div
+              aria-hidden="true"
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: '-9999px',
+                width: '794px',
+                pointerEvents: 'none',
+                opacity: 0,
+              }}
+            >
+              <ReportPreview reportData={reportData} />
             </div>
           </div>
         ) : (
