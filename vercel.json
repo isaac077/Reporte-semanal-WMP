@@ -3,6 +3,14 @@
   "framework": "vite",
   "rewrites": [
     {
+      "source": "/api/test",
+      "destination": "/api/test.ts"
+    },
+    {
+      "source": "/api/debug",
+      "destination": "/api/debug.ts"
+    },
+    {
       "source": "/api/(.*)",
       "destination": "/api/index.ts"
     },
