@@ -146,6 +146,10 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
                                     className="pdf-status-badge"
                                     style={{
                                       display: 'inline-block',
+                                      height: '18px',
+                                      lineHeight: '16px',
+                                      verticalAlign: 'middle',
+                                      textAlign: 'center',
                                       backgroundColor: badge.badgeBgPdf,
                                       color: badge.pdfColor,
                                       border: `1px solid ${badge.pdfColor}`,
@@ -153,9 +157,7 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
                                       fontSize: '9px',
                                       fontWeight: 700,
                                       letterSpacing: '0.025em',
-                                      padding: '3px 8px 3px 8px',
-                                      lineHeight: '1',
-                                      textAlign: 'center',
+                                      padding: '0 8px',
                                       boxSizing: 'border-box',
                                     }}
                                   >

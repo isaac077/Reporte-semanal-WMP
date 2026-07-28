@@ -152,6 +152,21 @@ export default function App() {
     }
   }, [reportData, pushToServer]);
 
+  // Expose PDF generation to window for headless browser generation (exact 1:1 match)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).generatePdfAsBase64 = async () => {
+        const { pdfBase64 } = await generatePdfFromElement(
+          'report-pdf-canvas-container',
+          reportData.metadata.cutoffDate,
+          reportData.metadata.responsible
+        );
+        const parts = pdfBase64.split(';base64,');
+        return parts[1] || parts[0];
+      };
+    }
+  }, [reportData]);
+
   // Actualizar metadatos
   const handleMetadataChange = (updatedMetadata: GeneralMetadata) => {
     setReportData((prev) => ({
@@ -313,6 +328,16 @@ export default function App() {
     selectedAccountId === 'all'
       ? reportData.accounts
       : reportData.accounts.filter((a) => a.accountId === selectedAccountId);
+
+  const isPrintView = typeof window !== 'undefined' && window.location.search.includes('print=true');
+
+  if (isPrintView) {
+    return (
+      <div className="bg-white min-h-screen p-0 m-0">
+        <ReportPreview reportData={reportData} />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-100/70 text-slate-900 font-sans flex flex-col justify-between">

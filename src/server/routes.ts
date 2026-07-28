@@ -36,7 +36,6 @@ export function setupApiRoutes(app: Express) {
   app.get('/api/report/pdf', async (req: Request, res: Response) => {
     try {
       const report = reportStore.getReport();
-      const html = buildReportHtml(report);
 
       // Dynamic import so Vercel can trace the module correctly
       const chromium = (await import('@sparticuz/chromium-min')).default;
@@ -46,6 +45,11 @@ export function setupApiRoutes(app: Express) {
         'https://github.com/Sparticuz/chromium/releases/download/v149.0.0/chromium-v149.0.0-pack.x64.tar'
       );
 
+      const protocol = req.headers['x-forwarded-proto'] || 'http';
+      const host = req.headers.host || 'thomaswagner-reporte-semanal.vercel.app';
+      const originUrl = `${protocol}://${host}`;
+      const printUrl = `${originUrl}/?print=true`;
+
       const browser = await puppeteer.launch({
         args: chromium.args,
         defaultViewport: { width: 794, height: 1123 },
@@ -54,12 +58,28 @@ export function setupApiRoutes(app: Express) {
       });
 
       const page = await browser.newPage();
-      await page.setContent(html, { waitUntil: 'networkidle0' });
+      
+      // 1. Navigate to origin to get localStorage access
+      await page.goto(originUrl, { waitUntil: 'domcontentloaded' });
 
-      const pdfBuffer = await page.pdf({
-        format: 'Letter',
-        printBackground: true,
-        margin: { top: '0', right: '0', bottom: '0', left: '0' },
+      // 2. Set the report data directly in local storage
+      const reportJson = JSON.stringify(report);
+      await page.evaluate((data) => {
+        localStorage.setItem('wmp_weekly_report_draft_v1', data);
+      }, reportJson);
+
+      // 3. Navigate to print preview
+      await page.goto(printUrl, { waitUntil: 'networkidle0' });
+
+      // 4. Call the exposed React PDF generator function
+      const base64Pdf = await page.evaluate(async () => {
+        for (let i = 0; i < 150; i++) {
+          if ((window as any).generatePdfAsBase64) {
+            return await (window as any).generatePdfAsBase64();
+          }
+          await new Promise((resolve) => setTimeout(resolve, 50));
+        }
+        throw new Error('Timeout esperando a generatePdfAsBase64 en la ventana.');
       });
 
       await browser.close();
@@ -70,7 +90,7 @@ export function setupApiRoutes(app: Express) {
 
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-      const finalBuffer = Buffer.from(pdfBuffer);
+      const finalBuffer = Buffer.from(base64Pdf, 'base64');
       res.setHeader('Content-Length', finalBuffer.length);
       res.send(finalBuffer);
     } catch (err: any) {
@@ -252,7 +272,7 @@ export function setupApiRoutes(app: Express) {
   app.get('/sse', handleMcpSse);
 
   // Handle stateless RPC request (Shared engine for Vercel Serverless & Direct HTTP POST)
-  const handleRpcRequest = async (jsonRpcReq: any) => {
+  const handleRpcRequest = async (jsonRpcReq: any, req?: Request) => {
     const { jsonrpc, id, method, params } = jsonRpcReq || {};
 
     if (jsonrpc !== '2.0') {
@@ -490,7 +510,6 @@ export function setupApiRoutes(app: Express) {
 
       if (name === 'download_pdf_report') {
         const report = reportStore.getReport();
-        const html = buildReportHtml(report);
 
         // Generate PDF using headless chromium
         const chromium = (await import('@sparticuz/chromium-min')).default;
@@ -498,6 +517,12 @@ export function setupApiRoutes(app: Express) {
         const executablePath = await chromium.executablePath(
           'https://github.com/Sparticuz/chromium/releases/download/v149.0.0/chromium-v149.0.0-pack.x64.tar'
         );
+
+        const host = req?.headers.host || process.env.VERCEL_URL || 'thomaswagner-reporte-semanal.vercel.app';
+        const protocol = (req?.headers['x-forwarded-proto'] as string) || (host.includes('localhost') ? 'http' : 'https');
+        const originUrl = `${protocol}://${host}`;
+        const printUrl = `${originUrl}/?print=true`;
+
         const browser = await puppeteer.launch({
           args: chromium.args,
           defaultViewport: { width: 794, height: 1123 },
@@ -505,15 +530,31 @@ export function setupApiRoutes(app: Express) {
           headless: true,
         });
         const page = await browser.newPage();
-        await page.setContent(html, { waitUntil: 'networkidle0' });
-        const pdfBuffer = await page.pdf({
-          format: 'Letter',
-          printBackground: true,
-          margin: { top: '0', right: '0', bottom: '0', left: '0' },
-        });
-        await browser.close();
+        
+        // 1. Navigate to origin to get localStorage access
+        await page.goto(originUrl, { waitUntil: 'domcontentloaded' });
 
-        const base64Pdf = Buffer.from(pdfBuffer).toString('base64');
+        // 2. Set the report data directly in local storage
+        const reportJson = JSON.stringify(report);
+        await page.evaluate((data) => {
+          localStorage.setItem('wmp_weekly_report_draft_v1', data);
+        }, reportJson);
+
+        // 3. Navigate to print preview
+        await page.goto(printUrl, { waitUntil: 'networkidle0' });
+
+        // 4. Call the exposed React PDF generator function
+        const base64Pdf = await page.evaluate(async () => {
+          for (let i = 0; i < 150; i++) {
+            if ((window as any).generatePdfAsBase64) {
+              return await (window as any).generatePdfAsBase64();
+            }
+            await new Promise((resolve) => setTimeout(resolve, 50));
+          }
+          throw new Error('Timeout esperando a generatePdfAsBase64 en la ventana.');
+        });
+
+        await browser.close();
         const weekClean = (report.metadata.week || 'Semana').replace(/[^a-zA-Z0-9]/g, '_');
         const dateClean = (report.metadata.cutoffDate || '2026').replace(/[^a-zA-Z0-9-]/g, '_');
         const filename = `Reporte_Semanal_ThomasWagner_${weekClean}_${dateClean}.pdf`;
@@ -659,8 +700,8 @@ export function setupApiRoutes(app: Express) {
     // Fallback for Vercel Serverless (stateless across lambda invocations)
     const body = req.body;
     const response = Array.isArray(body)
-      ? await Promise.all(body.map((b) => handleRpcRequest(b)))
-      : await handleRpcRequest(body);
+      ? await Promise.all(body.map((b) => handleRpcRequest(b, req)))
+      : await handleRpcRequest(body, req);
 
     if (response) {
       return res.json(response);
@@ -681,8 +722,8 @@ export function setupApiRoutes(app: Express) {
     // If request body has JSON-RPC or is array
     if (body && (body.jsonrpc || Array.isArray(body))) {
       const response = Array.isArray(body)
-        ? await Promise.all(body.map((b) => handleRpcRequest(b)))
-        : await handleRpcRequest(body);
+        ? await Promise.all(body.map((b) => handleRpcRequest(b, req)))
+        : await handleRpcRequest(body, req);
 
       if (response) {
         return res.json(response);
