@@ -28,7 +28,6 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
   mod
 ));
-var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // src/config/accounts.ts
 var FIXED_ACCOUNTS;
@@ -656,11 +655,6 @@ var init_pdfServerGenerator = __esm({
 });
 
 // api/index.ts
-var api_exports = {};
-__export(api_exports, {
-  default: () => api_default
-});
-module.exports = __toCommonJS(api_exports);
 var import_express = __toESM(require("express"));
 
 // src/server/routes.ts
@@ -2008,8 +2002,20 @@ ${JSON.stringify(updated, null, 2)}`
 
 // api/index.ts
 var app = (0, import_express.default)();
-app.use(import_express.default.json({ limit: "25mb" }));
-app.use(import_express.default.urlencoded({ extended: true, limit: "25mb" }));
+app.use((req, res, next) => {
+  if (req.path === "/api/mcp/message") {
+    next();
+  } else {
+    import_express.default.json({ limit: "25mb" })(req, res, next);
+  }
+});
+app.use((req, res, next) => {
+  if (req.path === "/api/mcp/message") {
+    next();
+  } else {
+    import_express.default.urlencoded({ extended: true, limit: "25mb" })(req, res, next);
+  }
+});
 app.get("/api/health", (req, res) => {
   res.json({
     status: "ok",
@@ -2019,4 +2025,4 @@ app.get("/api/health", (req, res) => {
   });
 });
 setupApiRoutes(app);
-var api_default = app;
+module.exports = app;
