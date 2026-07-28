@@ -70,8 +70,9 @@ export function setupApiRoutes(app: Express) {
 
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-      res.setHeader('Content-Length', pdfBuffer.length);
-      res.send(pdfBuffer);
+      const finalBuffer = Buffer.from(pdfBuffer);
+      res.setHeader('Content-Length', finalBuffer.length);
+      res.send(finalBuffer);
     } catch (err: any) {
       console.error('Error generando PDF con puppeteer:', err);
       res.status(500).json({ success: false, error: err?.message || 'Error al generar el PDF' });

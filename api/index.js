@@ -1386,8 +1386,9 @@ function setupApiRoutes(app2) {
       const filename = `Reporte_Semanal_ThomasWagner_${weekClean}_${dateClean}.pdf`;
       res.setHeader("Content-Type", "application/pdf");
       res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
-      res.setHeader("Content-Length", pdfBuffer.length);
-      res.send(pdfBuffer);
+      const finalBuffer = Buffer.from(pdfBuffer);
+      res.setHeader("Content-Length", finalBuffer.length);
+      res.send(finalBuffer);
     } catch (err) {
       console.error("Error generando PDF con puppeteer:", err);
       res.status(500).json({ success: false, error: err?.message || "Error al generar el PDF" });
