@@ -1,6 +1,6 @@
-import { FIXED_ACCOUNTS } from '../config/accounts.js';
-import { SAMPLE_REPORT_DATA } from '../data/sampleReport.js';
-import { FullReportData, GeneralMetadata, ActivityItem, AccountReport, ActivityStatus } from '../types/report.js';
+import { FIXED_ACCOUNTS } from '../config/accounts.ts';
+import { SAMPLE_REPORT_DATA } from '../data/sampleReport.ts';
+import { FullReportData, GeneralMetadata, ActivityItem, AccountReport, ActivityStatus } from '../types/report.ts';
 
 function createDefaultReportData(): FullReportData {
   const todayStr = new Date().toISOString().split('T')[0];

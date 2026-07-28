@@ -2,27 +2,27 @@
   "rewrites": [
     {
       "source": "/api/test",
-      "destination": "/api/test.ts"
+      "destination": "/api/test"
     },
     {
       "source": "/api/debug",
-      "destination": "/api/debug.ts"
+      "destination": "/api/debug"
     },
     {
       "source": "/api/(.*)",
-      "destination": "/api/index.ts"
+      "destination": "/api/index"
     },
     {
       "source": "/mcp",
-      "destination": "/api/index.ts"
+      "destination": "/api/index"
     },
     {
       "source": "/mcp/(.*)",
-      "destination": "/api/index.ts"
+      "destination": "/api/index"
     },
     {
       "source": "/sse",
-      "destination": "/api/index.ts"
+      "destination": "/api/index"
     },
     {
       "source": "/(.*)",

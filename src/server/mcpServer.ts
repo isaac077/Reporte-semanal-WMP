@@ -8,8 +8,8 @@ import {
   ListPromptsRequestSchema,
   GetPromptRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
-import { reportStore } from './reportState.js';
-import { ActivityStatus } from '../types/report.js';
+import { reportStore } from './reportState.ts';
+import { ActivityStatus } from '../types/report.ts';
 
 export function createMcpServer() {
   const server = new Server(
@@ -387,7 +387,7 @@ export function createMcpServer() {
         }
 
         case 'download_pdf_report': {
-          const { generateServerPdf } = await import('./pdfServerGenerator.js');
+          const { generateServerPdf } = await import('./pdfServerGenerator.ts');
           const report = reportStore.getReport();
           const pdfBuffer = generateServerPdf();
           const base64Pdf = pdfBuffer.toString('base64');

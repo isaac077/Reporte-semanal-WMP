@@ -1,8 +1,9 @@
 import { Express, Request, Response } from 'express';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
-import { reportStore } from './reportState.js';
-import { createMcpServer, sseTransports } from './mcpServer.js';
-import { ActivityStatus } from '../types/report.js';
+import { reportStore } from './reportState.ts';
+import { createMcpServer, sseTransports } from './mcpServer.ts';
+import { ActivityStatus } from '../types/report.ts';
+import { generateServerPdf } from './pdfServerGenerator.ts';
 
 export function setupApiRoutes(app: Express) {
   // CORS Middleware for Vercel & Remote Clients
@@ -34,7 +35,6 @@ export function setupApiRoutes(app: Express) {
   // Download PDF report
   app.get('/api/report/pdf', async (req: Request, res: Response) => {
     try {
-      const { generateServerPdf } = await import('./pdfServerGenerator.js');
       const pdfBuffer = generateServerPdf();
       const report = reportStore.getReport();
       const weekClean = (report.metadata.week || 'Semana').replace(/[^a-zA-Z0-9]/g, '_');
@@ -463,7 +463,6 @@ export function setupApiRoutes(app: Express) {
       }
 
       if (name === 'download_pdf_report') {
-        const { generateServerPdf } = await import('./pdfServerGenerator.js');
         const report = reportStore.getReport();
         const pdfBuffer = generateServerPdf();
         const base64Pdf = pdfBuffer.toString('base64');
