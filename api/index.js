@@ -612,7 +612,7 @@ function generateServerPdf() {
         doc.setFontSize(6.5);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(statusColors.text[0], statusColors.text[1], statusColors.text[2]);
-        doc.text(act.status, margin + 15, y + 4.5, { align: "center", baseline: "middle" });
+        doc.text(act.status, margin + 15, y + 3.8, { align: "center" });
         doc.setFontSize(8);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(30, 41, 59);
