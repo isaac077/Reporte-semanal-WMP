@@ -229,7 +229,7 @@ export const McpStatusModal: React.FC<McpStatusModalProps> = ({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <FileCode className="w-4 h-4 text-indigo-600" />
-                    <span className="text-xs font-black text-slate-800 uppercase tracking-wide">
+                    <span className="text-xs font-black text-slate-800 tracking-wide">
                       1. URL OpenAPI para ChatGPT Actions (Custom GPT)
                     </span>
                   </div>
@@ -271,7 +271,7 @@ export const McpStatusModal: React.FC<McpStatusModalProps> = ({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <Server className="w-4 h-4 text-emerald-600" />
-                    <span className="text-xs font-black text-slate-800 uppercase tracking-wide">
+                    <span className="text-xs font-black text-slate-800 tracking-wide">
                       2. Endpoint MCP SSE (Model Context Protocol Standard)
                     </span>
                   </div>
@@ -309,7 +309,7 @@ export const McpStatusModal: React.FC<McpStatusModalProps> = ({
 
               {/* Herramientas Disponibles */}
               <div className="bg-white rounded-xl p-4 border border-slate-200 space-y-3">
-                <h4 className="text-xs font-black text-slate-800 uppercase tracking-wide flex items-center space-x-1.5">
+                <h4 className="text-xs font-black text-slate-800 tracking-wide flex items-center space-x-1.5">
                   <Layers className="w-4 h-4 text-indigo-600" />
                   <span>12 Herramientas MCP Habilitadas para el Agente</span>
                 </h4>
@@ -436,7 +436,7 @@ export const McpStatusModal: React.FC<McpStatusModalProps> = ({
           {activeTab === 'tester' && (
             <div className="space-y-5">
               <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
-                <h4 className="text-xs font-black text-slate-800 uppercase tracking-wide">
+                <h4 className="text-xs font-black text-slate-800 tracking-wide">
                   Simulador de Ejecución MCP
                 </h4>
 

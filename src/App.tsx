@@ -334,7 +334,7 @@ export default function App() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center space-x-2">
-                <span className="text-[11px] font-bold tracking-wider uppercase px-2.5 py-0.5 rounded-md bg-white/10 text-sky-200 border border-white/10">
+                <span className="text-[11px] font-bold tracking-wider px-2.5 py-0.5 rounded-md bg-white/10 text-sky-200 border border-white/10">
                   Formato Oficial
                 </span>
                 <span className="text-xs text-sky-200/90 font-medium">
@@ -353,22 +353,22 @@ export default function App() {
             <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/15 flex items-center space-x-4 shrink-0">
               <div className="text-center">
                 <span className="block text-xl font-extrabold text-white">{stats.totalActivities}</span>
-                <span className="block text-[10px] text-sky-200 font-semibold uppercase">Total</span>
+                <span className="block text-[10px] text-sky-200 font-semibold ">Total</span>
               </div>
               <div className="h-7 w-px bg-white/20" />
               <div className="text-center">
                 <span className="block text-xl font-extrabold text-emerald-300">{stats.completed}</span>
-                <span className="block text-[10px] text-emerald-200 font-semibold uppercase">Listos</span>
+                <span className="block text-[10px] text-emerald-200 font-semibold ">Listos</span>
               </div>
               <div className="h-7 w-px bg-white/20" />
               <div className="text-center">
                 <span className="block text-xl font-extrabold text-sky-300">{stats.inProgress}</span>
-                <span className="block text-[10px] text-sky-200 font-semibold uppercase">Proceso</span>
+                <span className="block text-[10px] text-sky-200 font-semibold ">Proceso</span>
               </div>
               <div className="h-7 w-px bg-white/20" />
               <div className="text-center">
                 <span className="block text-xl font-extrabold text-rose-300">{stats.blocked}</span>
-                <span className="block text-[10px] text-rose-200 font-semibold uppercase">Bloqueados</span>
+                <span className="block text-[10px] text-rose-200 font-semibold ">Bloqueados</span>
               </div>
             </div>
           </div>

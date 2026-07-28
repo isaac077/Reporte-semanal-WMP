@@ -31,8 +31,8 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
           {/* TITULO Y LOGO OFICIAL */}
           <div className="flex justify-between items-start mb-6">
             <div>
-              <h1 className="text-[22px] font-black text-[#B91C1C] tracking-tight uppercase leading-tight mb-0.5" style={{ color: '#B91C1C' }}>
-                REPORTE SEMANAL DE ESTATUS
+              <h1 className="text-[22px] font-black text-[#B91C1C] tracking-tight leading-tight mb-0.5" style={{ color: '#B91C1C' }}>
+                Reporte Semanal de Estatus
               </h1>
               <p className="text-[12px] text-[#64748B] font-medium" style={{ color: '#64748B' }}>
                 Thomas Wagner.MX • Business Development Agency
@@ -47,10 +47,10 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
           <div className="mb-6 border border-[#CBD5E1] rounded-none overflow-hidden" style={{ borderColor: '#CBD5E1' }}>
             <table className="w-full border-collapse text-left" style={{ borderCollapse: 'collapse', width: '100%' }}>
               <thead>
-                <tr className="bg-[#F8FAFC] text-[#B91C1C] text-[10px] font-bold uppercase tracking-wider border-b border-[#CBD5E1]" style={{ backgroundColor: '#F8FAFC', color: '#B91C1C', borderBottom: '1px solid #CBD5E1' }}>
-                  <th className="py-2.5 px-3 border-r border-[#CBD5E1] w-[20%]" style={{ borderRight: '1px solid #CBD5E1', verticalAlign: 'middle', lineHeight: '1.2' }}>SEMANA</th>
-                  <th className="py-2.5 px-3 border-r border-[#CBD5E1] w-[30%]" style={{ borderRight: '1px solid #CBD5E1', verticalAlign: 'middle', lineHeight: '1.2' }}>FECHA DE CORTE</th>
-                  <th className="py-2.5 px-3 w-[50%]" style={{ verticalAlign: 'middle', lineHeight: '1.2' }}>RESPONSABLE</th>
+                <tr className="bg-[#F8FAFC] text-[#B91C1C] text-[10px] font-bold tracking-wider border-b border-[#CBD5E1]" style={{ backgroundColor: '#F8FAFC', color: '#B91C1C', borderBottom: '1px solid #CBD5E1' }}>
+                  <th className="py-2.5 px-3 border-r border-[#CBD5E1] w-[20%]" style={{ borderRight: '1px solid #CBD5E1', verticalAlign: 'middle', lineHeight: '1.2' }}>Semana</th>
+                  <th className="py-2.5 px-3 border-r border-[#CBD5E1] w-[30%]" style={{ borderRight: '1px solid #CBD5E1', verticalAlign: 'middle', lineHeight: '1.2' }}>Fecha de Corte</th>
+                  <th className="py-2.5 px-3 w-[50%]" style={{ verticalAlign: 'middle', lineHeight: '1.2' }}>Responsable</th>
                 </tr>
               </thead>
               <tbody>
@@ -67,10 +67,10 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
                 </tr>
               </tbody>
               <thead>
-                <tr className="bg-[#F8FAFC] text-[#B91C1C] text-[10px] font-bold uppercase tracking-wider border-b border-[#CBD5E1]" style={{ backgroundColor: '#F8FAFC', color: '#B91C1C', borderBottom: '1px solid #CBD5E1' }}>
-                  <th className="py-2.5 px-3 border-r border-[#CBD5E1] w-[35%]" style={{ borderRight: '1px solid #CBD5E1', verticalAlign: 'middle', lineHeight: '1.2' }}>ÁREA / PUESTO</th>
-                  <th className="py-2.5 px-3 border-r border-[#CBD5E1] w-[30%]" style={{ borderRight: '1px solid #CBD5E1', verticalAlign: 'middle', lineHeight: '1.2' }}>TELÉFONO</th>
-                  <th className="py-2.5 px-3 w-[35%]" style={{ verticalAlign: 'middle', lineHeight: '1.2' }}>CORREO ELECTRÓNICO</th>
+                <tr className="bg-[#F8FAFC] text-[#B91C1C] text-[10px] font-bold tracking-wider border-b border-[#CBD5E1]" style={{ backgroundColor: '#F8FAFC', color: '#B91C1C', borderBottom: '1px solid #CBD5E1' }}>
+                  <th className="py-2.5 px-3 border-r border-[#CBD5E1] w-[35%]" style={{ borderRight: '1px solid #CBD5E1', verticalAlign: 'middle', lineHeight: '1.2' }}>Área / Puesto</th>
+                  <th className="py-2.5 px-3 border-r border-[#CBD5E1] w-[30%]" style={{ borderRight: '1px solid #CBD5E1', verticalAlign: 'middle', lineHeight: '1.2' }}>Teléfono</th>
+                  <th className="py-2.5 px-3 w-[35%]" style={{ verticalAlign: 'middle', lineHeight: '1.2' }}>Correo Electrónico</th>
                 </tr>
               </thead>
               <tbody>
@@ -107,12 +107,12 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
                 {/* Tabla de Actividades */}
                 <table className="w-full border-collapse text-left" style={{ borderCollapse: 'collapse', width: '100%', tableLayout: 'fixed' }}>
                   <thead>
-                    <tr className="bg-[#B91C1C] text-white text-[10px] font-bold uppercase tracking-wider" style={{ backgroundColor: '#B91C1C', color: '#FFFFFF' }}>
+                    <tr className="bg-[#B91C1C] text-white text-[10px] font-bold tracking-wider" style={{ backgroundColor: '#B91C1C', color: '#FFFFFF' }}>
                       <th className="py-2 px-3 border-r border-[#991B1B] w-[38%]" style={{ borderRight: '1px solid #991B1B', verticalAlign: 'middle', lineHeight: '1.2', width: '38%' }}>
-                        TEMA / PROYECTO
+                        Tema / Proyecto
                       </th>
                       <th className="py-2 px-3 w-[62%]" style={{ verticalAlign: 'middle', lineHeight: '1.2', width: '62%' }}>
-                        ESTATUS / ACTUALIZACIÓN
+                        Estatus / Actualización
                       </th>
                     </tr>
                   </thead>
@@ -154,7 +154,6 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
                                       borderRadius: '3px',
                                       fontSize: '9px',
                                       fontWeight: 700,
-                                      textTransform: 'uppercase',
                                       letterSpacing: '0.025em',
                                       padding: '2px 8px',
                                       lineHeight: '1.2',
@@ -203,7 +202,7 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
             {/* Columna Centro: Logo Corporativo Thomas Wagner */}
             <div className="text-center flex flex-col items-center justify-center border-x border-[#E2E8F0] px-2 py-1" style={{ width: '32%', borderLeft: '1px solid #E2E8F0', borderRight: '1px solid #E2E8F0', display: 'flex', flexDirection: 'col', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box' }}>
               <WmpLogo size="lg" />
-              <span className="text-[7.5px] text-[#64748B] font-bold uppercase tracking-wider block mt-1" style={{ color: '#64748B', display: 'block' }}>
+              <span className="text-[7.5px] text-[#64748B] font-bold tracking-wider block mt-1" style={{ color: '#64748B', display: 'block' }}>
                 Business Development Agency
               </span>
             </div>

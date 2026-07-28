@@ -30,7 +30,7 @@ export const AccountSelectorTabs: React.FC<AccountSelectorTabsProps> = ({
       <div className="flex items-center justify-between mb-3 px-1">
         <div className="flex items-center space-x-2">
           <Building2 className="w-4 h-4 text-[#B91C1C]" />
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
+          <span className="text-xs font-bold tracking-wider text-slate-700">
             Selección de Cuenta a Capturar
           </span>
         </div>

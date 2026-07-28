@@ -2017,12 +2017,7 @@ app.use((req, res, next) => {
   }
 });
 app.get("/api/health", (req, res) => {
-  res.json({
-    status: "ok",
-    service: "WMP Reportes Semanales",
-    platform: "Vercel Serverless",
-    mcp: "enabled"
-  });
+  res.json({ status: "ok", service: "WMP Reportes Semanales", platform: "Vercel Serverless", mcp: "enabled" });
 });
 setupApiRoutes(app);
 module.exports = app;

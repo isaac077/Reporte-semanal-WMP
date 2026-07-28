@@ -39,10 +39,10 @@ export const WmpLogo: React.FC<WmpLogoProps> = ({
           }}
           className="shrink-0 mb-1"
         />
-        <div className="text-[14px] font-black tracking-tight text-[#B91C1C] uppercase leading-tight font-sans" style={{ color: '#B91C1C' }}>
+        <div className="text-[14px] font-black tracking-tight text-[#B91C1C] leading-tight font-sans" style={{ color: '#B91C1C' }}>
           Thomas Wagner.MX
         </div>
-        <div className="text-[9px] font-bold tracking-wider text-slate-600 uppercase mt-0.5 font-sans" style={{ color: '#475569' }}>
+        <div className="text-[9px] font-bold tracking-wider text-slate-600 mt-0.5 font-sans" style={{ color: '#475569' }}>
           Business Development Agency
         </div>
       </div>

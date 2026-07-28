@@ -93,18 +93,18 @@ export const AccountActivitiesTable: React.FC<AccountActivitiesTableProps> = ({
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-[#B91C1C] text-white text-xs font-bold uppercase tracking-wider">
+              <tr className="bg-[#B91C1C] text-white text-xs font-bold tracking-wider">
                 <th className="py-2.5 px-4 w-[35%] sm:w-[32%] border-r border-[#991B1B]">
-                  TEMA O PROYECTO
+                  Tema o Proyecto
                 </th>
                 <th className="py-2.5 px-4 w-[20%] sm:w-[18%] border-r border-[#991B1B]">
-                  ESTATUS
+                  Estatus
                 </th>
                 <th className="py-2.5 px-4 w-[40%] sm:w-[45%] border-r border-[#991B1B]">
-                  ACTUALIZACIÓN / AVANCE / SIGUIENTE PASO
+                  Actualización / Avance / Siguiente Paso
                 </th>
                 <th className="py-2.5 px-3 w-[5%] text-center">
-                  ACCIÓN
+                  Acción
                 </th>
               </tr>
             </thead>

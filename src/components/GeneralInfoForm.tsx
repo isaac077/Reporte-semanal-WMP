@@ -30,7 +30,7 @@ export const GeneralInfoForm: React.FC<GeneralInfoFormProps> = ({ metadata, onCh
       <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
         <div className="flex items-center space-x-2">
           <div className="w-2 h-5 bg-[#B91C1C] rounded-full" />
-          <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider">
+          <h2 className="text-sm font-bold text-slate-800 tracking-wider">
             Información General del Reporte
           </h2>
         </div>
@@ -42,7 +42,7 @@ export const GeneralInfoForm: React.FC<GeneralInfoFormProps> = ({ metadata, onCh
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Semana */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5 flex items-center">
+          <label className="block text-xs font-semibold text-slate-700 tracking-wide mb-1.5 flex items-center">
             <Clock className="w-3.5 h-3.5 mr-1 text-[#B91C1C]" />
             Semana
           </label>
@@ -57,7 +57,7 @@ export const GeneralInfoForm: React.FC<GeneralInfoFormProps> = ({ metadata, onCh
 
         {/* Fecha de Corte */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5 flex items-center">
+          <label className="block text-xs font-semibold text-slate-700 tracking-wide mb-1.5 flex items-center">
             <Calendar className="w-3.5 h-3.5 mr-1 text-[#B91C1C]" />
             Fecha de Corte
           </label>
@@ -71,7 +71,7 @@ export const GeneralInfoForm: React.FC<GeneralInfoFormProps> = ({ metadata, onCh
 
         {/* Responsable */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5 flex items-center">
+          <label className="block text-xs font-semibold text-slate-700 tracking-wide mb-1.5 flex items-center">
             <User className="w-3.5 h-3.5 mr-1 text-[#B91C1C]" />
             Responsable
           </label>
@@ -86,7 +86,7 @@ export const GeneralInfoForm: React.FC<GeneralInfoFormProps> = ({ metadata, onCh
 
         {/* Área / Puesto */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5 flex items-center">
+          <label className="block text-xs font-semibold text-slate-700 tracking-wide mb-1.5 flex items-center">
             <Briefcase className="w-3.5 h-3.5 mr-1 text-[#B91C1C]" />
             Área / Puesto
           </label>
@@ -101,7 +101,7 @@ export const GeneralInfoForm: React.FC<GeneralInfoFormProps> = ({ metadata, onCh
 
         {/* Teléfono */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5 flex items-center">
+          <label className="block text-xs font-semibold text-slate-700 tracking-wide mb-1.5 flex items-center">
             <Phone className="w-3.5 h-3.5 mr-1 text-[#B91C1C]" />
             Teléfono
           </label>
@@ -116,7 +116,7 @@ export const GeneralInfoForm: React.FC<GeneralInfoFormProps> = ({ metadata, onCh
 
         {/* Correo Electrónico */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5 flex items-center">
+          <label className="block text-xs font-semibold text-slate-700 tracking-wide mb-1.5 flex items-center">
             <Mail className="w-3.5 h-3.5 mr-1 text-[#B91C1C]" />
             Correo Electrónico
           </label>
