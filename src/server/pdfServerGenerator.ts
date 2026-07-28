@@ -67,13 +67,13 @@ export function generateServerPdf(): Buffer {
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(100, 116, 139);
-  doc.text('REPORTE SEMANAL DE ESTATUS - BUSINESS DEVELOPMENT AGENCY', margin, y + 5);
+  doc.text('Reporte Semanal de Estatus - Business Development Agency', margin, y + 5);
 
   // Date & Week on top right
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
   doc.setTextColor(primaryRed[0], primaryRed[1], primaryRed[2]);
-  doc.text(data.metadata.week.toUpperCase(), pageWidth - margin, y, { align: 'right' });
+  doc.text(data.metadata.week, pageWidth - margin, y, { align: 'right' });
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
@@ -127,17 +127,17 @@ export function generateServerPdf(): Buffer {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
   doc.setTextColor(primaryRed[0], primaryRed[1], primaryRed[2]);
-  doc.text('RESUMEN EJECUTIVO DE AVANCE', margin, y);
+  doc.text('Resumen Ejecutivo de Avance', margin, y);
 
   y += 4;
 
   const boxWidth = (contentWidth - 12) / 5;
   const metrics = [
-    { label: 'TOTAL', count: summary.totals.total, color: [185, 28, 28] },
-    { label: 'COMPLETADO', count: summary.totals.completed, color: [22, 101, 52] },
-    { label: 'EN PROCESO', count: summary.totals.inProgress, color: [3, 105, 161] },
-    { label: 'BLOQUEADO', count: summary.totals.blocked, color: [153, 27, 27] },
-    { label: 'PENDIENTE', count: summary.totals.pending, color: [146, 64, 14] },
+    { label: 'Total', count: summary.totals.total, color: [185, 28, 28] },
+    { label: 'Completado', count: summary.totals.completed, color: [22, 101, 52] },
+    { label: 'En Proceso', count: summary.totals.inProgress, color: [3, 105, 161] },
+    { label: 'Bloqueado', count: summary.totals.blocked, color: [153, 27, 27] },
+    { label: 'Pendiente', count: summary.totals.pending, color: [146, 64, 14] },
   ];
 
   metrics.forEach((m, idx) => {
@@ -170,7 +170,7 @@ export function generateServerPdf(): Buffer {
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(9.5);
     doc.setTextColor(255, 255, 255);
-    doc.text(account.accountName.toUpperCase(), margin + 4, y + 4.8);
+    doc.text(account.accountName, margin + 4, y + 4.8);
 
     const actCountText = `${account.activities.length} Actividades`;
     doc.setFontSize(8);
@@ -191,9 +191,9 @@ export function generateServerPdf(): Buffer {
     const colTemaX = margin + 32;
     const colUpdateX = margin + 90;
 
-    doc.text('ESTATUS', colEstatusX, y + 4.2);
-    doc.text('TEMA / PROYECTO', colTemaX, y + 4.2);
-    doc.text('AVANCES / SIGUIENTES PASOS', colUpdateX, y + 4.2);
+    doc.text('Estatus', colEstatusX, y + 4.2);
+    doc.text('Tema / Proyecto', colTemaX, y + 4.2);
+    doc.text('Avances / Siguientes Pasos', colUpdateX, y + 4.2);
 
     y += 6;
 
@@ -227,7 +227,7 @@ export function generateServerPdf(): Buffer {
         doc.setFontSize(6.5);
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(statusColors.text[0], statusColors.text[1], statusColors.text[2]);
-        doc.text(act.status, margin + 15, y + 5.1, { align: 'center' });
+        doc.text(act.status, margin + 15, y + 4.5, { align: 'center', baseline: 'middle' });
 
         // Topic text
         doc.setFontSize(8);
