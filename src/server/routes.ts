@@ -3,7 +3,7 @@ import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import { reportStore } from './reportState.ts';
 import { createMcpServer, sseTransports } from './mcpServer.ts';
 import { ActivityStatus } from '../types/report.ts';
-import { generateServerPdf } from './pdfServerGenerator.ts';
+import { buildReportHtml } from './pdfBrowserGenerator.ts';
 
 export function setupApiRoutes(app: Express) {
   // CORS Middleware for Vercel & Remote Clients
@@ -32,11 +32,38 @@ export function setupApiRoutes(app: Express) {
     res.json(reportStore.getReport());
   });
 
-  // Download PDF report
+  // Download PDF report (uses puppeteer to render the same HTML as the app)
   app.get('/api/report/pdf', async (req: Request, res: Response) => {
     try {
-      const pdfBuffer = generateServerPdf();
       const report = reportStore.getReport();
+      const html = buildReportHtml(report);
+
+      // Dynamic import so Vercel can trace the module correctly
+      const chromium = (await import('@sparticuz/chromium-min')).default;
+      const puppeteer = (await import('puppeteer-core')).default;
+
+      const executablePath = await chromium.executablePath(
+        'https://github.com/Sparticuz/chromium/releases/download/v149.0.0/chromium-v149.0.0-pack.tar'
+      );
+
+      const browser = await puppeteer.launch({
+        args: chromium.args,
+        defaultViewport: { width: 794, height: 1123 },
+        executablePath,
+        headless: true,
+      });
+
+      const page = await browser.newPage();
+      await page.setContent(html, { waitUntil: 'networkidle0' });
+
+      const pdfBuffer = await page.pdf({
+        format: 'Letter',
+        printBackground: true,
+        margin: { top: '0', right: '0', bottom: '0', left: '0' },
+      });
+
+      await browser.close();
+
       const weekClean = (report.metadata.week || 'Semana').replace(/[^a-zA-Z0-9]/g, '_');
       const dateClean = (report.metadata.cutoffDate || '2026').replace(/[^a-zA-Z0-9-]/g, '_');
       const filename = `Reporte_Semanal_ThomasWagner_${weekClean}_${dateClean}.pdf`;
@@ -46,10 +73,8 @@ export function setupApiRoutes(app: Express) {
       res.setHeader('Content-Length', pdfBuffer.length);
       res.send(pdfBuffer);
     } catch (err: any) {
-      console.error('Error generando PDF en el servidor:', err);
-      res
-        .status(500)
-        .json({ success: false, error: err?.message || 'Error al generar el archivo PDF' });
+      console.error('Error generando PDF con puppeteer:', err);
+      res.status(500).json({ success: false, error: err?.message || 'Error al generar el PDF' });
     }
   });
 
@@ -464,8 +489,30 @@ export function setupApiRoutes(app: Express) {
 
       if (name === 'download_pdf_report') {
         const report = reportStore.getReport();
-        const pdfBuffer = generateServerPdf();
-        const base64Pdf = pdfBuffer.toString('base64');
+        const html = buildReportHtml(report);
+
+        // Generate PDF using headless chromium
+        const chromium = (await import('@sparticuz/chromium-min')).default;
+        const puppeteer = (await import('puppeteer-core')).default;
+        const executablePath = await chromium.executablePath(
+          'https://github.com/Sparticuz/chromium/releases/download/v149.0.0/chromium-v149.0.0-pack.tar'
+        );
+        const browser = await puppeteer.launch({
+          args: chromium.args,
+          defaultViewport: { width: 794, height: 1123 },
+          executablePath,
+          headless: true,
+        });
+        const page = await browser.newPage();
+        await page.setContent(html, { waitUntil: 'networkidle0' });
+        const pdfBuffer = await page.pdf({
+          format: 'Letter',
+          printBackground: true,
+          margin: { top: '0', right: '0', bottom: '0', left: '0' },
+        });
+        await browser.close();
+
+        const base64Pdf = Buffer.from(pdfBuffer).toString('base64');
         const weekClean = (report.metadata.week || 'Semana').replace(/[^a-zA-Z0-9]/g, '_');
         const dateClean = (report.metadata.cutoffDate || '2026').replace(/[^a-zA-Z0-9-]/g, '_');
         const filename = `Reporte_Semanal_ThomasWagner_${weekClean}_${dateClean}.pdf`;

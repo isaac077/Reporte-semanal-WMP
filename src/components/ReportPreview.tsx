@@ -141,13 +141,13 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
                             <td className="py-2.5 px-3 break-words" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                               <div>
                                 {/* Badge de Estatus */}
-                                <div style={{ display: 'block', marginBottom: '2px' }}>
+                                <div style={{ display: 'block', marginBottom: '4px' }}>
                                   <span
                                     className="pdf-status-badge"
                                     style={{
-                                      display: 'inline-block',
-                                      position: 'relative',
-                                      top: '-10px',
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
                                       backgroundColor: badge.badgeBgPdf,
                                       color: badge.pdfColor,
                                       border: `1px solid ${badge.pdfColor}`,
@@ -156,10 +156,10 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
                                       fontWeight: 700,
                                       letterSpacing: '0.025em',
                                       padding: '2px 8px',
-                                      lineHeight: '1.2',
+                                      lineHeight: '1',
                                       textAlign: 'center',
-                                      verticalAlign: 'middle',
                                       boxSizing: 'border-box',
+                                      minHeight: '18px',
                                     }}
                                   >
                                     {act.status}
