@@ -43,7 +43,7 @@ export function setupApiRoutes(app: Express) {
       const puppeteer = (await import('puppeteer-core')).default;
 
       const executablePath = await chromium.executablePath(
-        'https://github.com/Sparticuz/chromium/releases/download/v149.0.0/chromium-v149.0.0-pack.tar'
+        'https://github.com/Sparticuz/chromium/releases/download/v149.0.0/chromium-v149.0.0-pack.x64.tar'
       );
 
       const browser = await puppeteer.launch({
@@ -495,7 +495,7 @@ export function setupApiRoutes(app: Express) {
         const chromium = (await import('@sparticuz/chromium-min')).default;
         const puppeteer = (await import('puppeteer-core')).default;
         const executablePath = await chromium.executablePath(
-          'https://github.com/Sparticuz/chromium/releases/download/v149.0.0/chromium-v149.0.0-pack.tar'
+          'https://github.com/Sparticuz/chromium/releases/download/v149.0.0/chromium-v149.0.0-pack.x64.tar'
         );
         const browser = await puppeteer.launch({
           args: chromium.args,

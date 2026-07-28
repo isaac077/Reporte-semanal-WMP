@@ -145,9 +145,7 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
                                   <span
                                     className="pdf-status-badge"
                                     style={{
-                                      display: 'inline-flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
+                                      display: 'inline-block',
                                       backgroundColor: badge.badgeBgPdf,
                                       color: badge.pdfColor,
                                       border: `1px solid ${badge.pdfColor}`,
@@ -155,11 +153,10 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ reportData }) => {
                                       fontSize: '9px',
                                       fontWeight: 700,
                                       letterSpacing: '0.025em',
-                                      padding: '2px 8px',
+                                      padding: '3px 8px 3px 8px',
                                       lineHeight: '1',
                                       textAlign: 'center',
                                       boxSizing: 'border-box',
-                                      minHeight: '18px',
                                     }}
                                   >
                                     {act.status}

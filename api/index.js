@@ -1214,7 +1214,7 @@ function buildReportHtml(data) {
                   </td>
                   <td style="padding:10px 12px;font-size:11px;word-break:break-word;overflow-wrap:break-word;">
                     <div style="margin-bottom:4px;">
-                      <span style="display:inline-flex;align-items:center;justify-content:center;background-color:${badge.bg};color:${badge.color};border:1px solid ${badge.border};border-radius:3px;font-size:9px;font-weight:700;letter-spacing:0.025em;padding:2px 8px;line-height:1;min-height:18px;box-sizing:border-box;">
+                      <span style="display:inline-block;background-color:${badge.bg};color:${badge.color};border:1px solid ${badge.border};border-radius:3px;font-size:9px;font-weight:700;letter-spacing:0.025em;padding:3px 8px 3px 8px;line-height:1;box-sizing:border-box;">
                         ${act.status}
                       </span>
                     </div>
@@ -1365,7 +1365,7 @@ function setupApiRoutes(app2) {
       const chromium = (await import("@sparticuz/chromium-min")).default;
       const puppeteer = (await import("puppeteer-core")).default;
       const executablePath = await chromium.executablePath(
-        "https://github.com/Sparticuz/chromium/releases/download/v149.0.0/chromium-v149.0.0-pack.tar"
+        "https://github.com/Sparticuz/chromium/releases/download/v149.0.0/chromium-v149.0.0-pack.x64.tar"
       );
       const browser = await puppeteer.launch({
         args: chromium.args,
@@ -1753,7 +1753,7 @@ function setupApiRoutes(app2) {
         const chromium = (await import("@sparticuz/chromium-min")).default;
         const puppeteer = (await import("puppeteer-core")).default;
         const executablePath = await chromium.executablePath(
-          "https://github.com/Sparticuz/chromium/releases/download/v149.0.0/chromium-v149.0.0-pack.tar"
+          "https://github.com/Sparticuz/chromium/releases/download/v149.0.0/chromium-v149.0.0-pack.x64.tar"
         );
         const browser = await puppeteer.launch({
           args: chromium.args,
