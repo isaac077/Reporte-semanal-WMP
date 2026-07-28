@@ -227,7 +227,7 @@ export function generateServerPdf(): Buffer {
         doc.setFontSize(6.5);
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(statusColors.text[0], statusColors.text[1], statusColors.text[2]);
-        doc.text(act.status.toUpperCase(), margin + 15, y + 5.5, { align: 'center' });
+        doc.text(act.status, margin + 15, y + 5.1, { align: 'center' });
 
         // Topic text
         doc.setFontSize(8);

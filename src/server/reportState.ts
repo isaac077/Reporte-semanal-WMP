@@ -26,7 +26,7 @@ class ReportStore {
   private listeners: Array<() => void> = [];
 
   constructor() {
-    this.data = SAMPLE_REPORT_DATA;
+    this.data = createDefaultReportData();
   }
 
   public getReport(): FullReportData {

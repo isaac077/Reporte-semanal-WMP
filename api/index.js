@@ -28,6 +28,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
   mod
 ));
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // src/config/accounts.ts
 var FIXED_ACCOUNTS;
@@ -184,6 +185,24 @@ var init_sampleReport = __esm({
 });
 
 // src/server/reportState.ts
+function createDefaultReportData() {
+  const todayStr = (/* @__PURE__ */ new Date()).toISOString().split("T")[0];
+  return {
+    metadata: {
+      week: "Semana 30",
+      cutoffDate: todayStr,
+      responsible: "Thomas Wagner",
+      department: "Business Development Agency",
+      phone: "+52 442 181 7209",
+      email: "wagner@thomaswagner.mx"
+    },
+    accounts: FIXED_ACCOUNTS.map((acc) => ({
+      accountId: acc.id,
+      accountName: acc.name,
+      activities: []
+    }))
+  };
+}
 var ReportStore, reportStore;
 var init_reportState = __esm({
   "src/server/reportState.ts"() {
@@ -192,7 +211,7 @@ var init_reportState = __esm({
     ReportStore = class {
       constructor() {
         this.listeners = [];
-        this.data = SAMPLE_REPORT_DATA;
+        this.data = createDefaultReportData();
       }
       getReport() {
         return JSON.parse(JSON.stringify(this.data));
@@ -594,7 +613,7 @@ function generateServerPdf() {
         doc.setFontSize(6.5);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(statusColors.text[0], statusColors.text[1], statusColors.text[2]);
-        doc.text(act.status.toUpperCase(), margin + 15, y + 5.5, { align: "center" });
+        doc.text(act.status, margin + 15, y + 5.1, { align: "center" });
         doc.setFontSize(8);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(30, 41, 59);
@@ -637,6 +656,11 @@ var init_pdfServerGenerator = __esm({
 });
 
 // api/index.ts
+var api_exports = {};
+__export(api_exports, {
+  default: () => api_default
+});
+module.exports = __toCommonJS(api_exports);
 var import_express = __toESM(require("express"));
 
 // src/server/routes.ts
@@ -1995,4 +2019,4 @@ app.get("/api/health", (req, res) => {
   });
 });
 setupApiRoutes(app);
-module.exports = app;
+var api_default = app;
